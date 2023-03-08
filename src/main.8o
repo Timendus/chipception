@@ -1,0 +1,88 @@
+:include "macros.8o"
+
+: main
+    reset
+    :alias unpack-hi v1
+    :alias unpack-lo v2
+    :unpack long chip-8-font
+    load-font
+    :unpack long rom-test-suite
+    load-program
+    loop
+        run-cycle
+    again
+
+# Lazily reset the interpreter. Also sets a nice tone for the beep.
+: reset
+    clear
+    set sp 0
+    set pc 0x200
+    i := beep-pattern
+    audio
+    v0 := 70
+    pitch := v0
+    return
+
+# (v1, v2) point to program data, copy it into RAM at 0x200
+: load-program
+    make v3 v4 0
+    loop
+        i := load-program-smc
+        save v1 - v2
+        0xF0 0x00
+        : load-program-smc
+        0x00 0x00
+        # i == program address
+        load-program-add
+        # i == byte within program
+        load v0
+        i := ram
+        v3 += 2
+        load-program-add
+        v3 -= 2
+        save v0
+
+        # Increase index
+        vF := 1
+        v4 += vF
+        v3 += vF
+
+        # Are we done? (Just fill RAM, whatever)
+        if v3 != 0x0E then
+    again
+    return
+
+# Add (v3, v4) as one 16-bit number to the index register
+: load-program-add
+    v5 := v3
+    add-to-i v5 v4
+    return
+
+# (v1, v2) point to font data, copy it into RAM at 0x000
+: load-font
+    v3 := 0
+    loop
+        i := load-font-smc
+        save v1 - v2
+        0xF0 0x00
+        : load-font-smc
+        0x00 0x00
+        i += v3
+        load v0
+        i := ram
+        i += v3
+        save v0
+        v3 += 1
+        if v3 != 180 then
+    again
+    return
+
+:segment data
+
+: beep-pattern
+    0xFF 0x00 0xFF 0x00 0xFF 0x00 0xFF 0x00 0xFF 0x00 0xFF 0x00 0xFF 0x00 0xFF 0x00
+
+:include "cycle.8o"
+:include "machine.8o"
+:include "fonts.8o"
+:include "roms.8o"

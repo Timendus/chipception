@@ -1,0 +1,25 @@
+:macro make REGa REGb WORD {
+    :calc hi { ( WORD >> 8 ) & 0xFF }
+    :calc lo { WORD & 0xFF }
+    REGa := hi
+    REGb := lo
+}
+
+:macro set LOCATION WORD {
+    make v0 v1 WORD
+    i := LOCATION
+    save v1
+}
+
+# Add (REGa, REGb) as one 16-bit number to the index register (destructive to REGa)
+:macro add-to-i REGa REGb {
+    loop
+        while REGa != 0
+        vF := 0xFF
+        i += vF
+        vF := 1
+        i += vF
+        REGa -= 1
+    again
+    i += REGb
+}

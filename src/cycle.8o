@@ -1,0 +1,560 @@
+: run-cycle
+    # Load and increase PC
+    i := pc
+    load v0 - v1
+    v2 := v0
+    v3 := v1
+    vF := 2
+    v1 += vF
+    v0 += vF
+    save v0 - v1
+
+    # Load opcode from memory
+    i := ram
+    add-to-i v2 v3
+    load v1
+
+    # Split up first byte
+    v2 := v0
+    vF := 0xF0
+    v2 &= vF
+    v3 := v0
+    vF := 0x0F
+    v3 &= vF
+
+    if v2 == 0x00 then jump range-00
+
+    # Jump to NNN
+    if v2 == 0x10 begin
+        v0 := v3
+        i := pc
+        save v1
+        return
+    end
+
+    # Subroutine call to NNN
+    if v2 == 0x20 begin
+        # Load and increase stack pointer
+        i := sp
+        load v0 - v0
+        v2 := v0
+        v0 += 2
+        save v0
+        # Load old PC and write call destination
+        i := pc
+        load v4 - v5
+        v0 := v3
+        save v1
+        i := stack
+        i += v2
+        save v4 - v5
+        return
+    end
+
+    # Skip next opcode if register X == NN
+    if v2 == 0x30 begin
+        i := registers
+        i += v3
+        load v0
+        if v0 == v1 then jump skip-next-opcode
+        return
+    end
+
+    # Skip next opcode if register X != NN
+    if v2 == 0x40 begin
+        i := registers
+        i += v3
+        load v0
+        if v0 != v1 then jump skip-next-opcode
+        return
+    end
+
+    # Skip next opcode if registers are equal
+    if v2 == 0x50 begin
+        i := registers
+        i += v3
+        load v0
+        i := registers
+        v1 >>= v1  v1 >>= v1
+        v1 >>= v1  v1 >>= v1
+        i += v1
+        load v1 - v1
+        if v0 == v1 then jump skip-next-opcode
+        return
+    end
+
+    # Set register X to NN
+    if v2 == 0x60 begin
+        i := registers
+        i += v3
+        save v1 - v1
+        return
+    end
+
+    # Add NN to register X
+    if v2 == 0x70 begin
+        i := registers
+        i += v3
+        load v0 - v0
+        v0 += v1
+        save v0
+        return
+    end
+
+    if v2 == 0x80 then jump do-maths
+
+    # Skip next opcode if registers are not equal
+    if v2 == 0x90 begin
+        i := registers
+        i += v3
+        load v0
+        i := registers
+        v1 >>= v1  v1 >>= v1
+        v1 >>= v1  v1 >>= v1
+        i += v1
+        load v1 - v1
+        if v0 != v1 then jump skip-next-opcode
+        return
+    end
+
+    # Set i to NNN
+    if v2 == 0xA0 begin
+        v0 := v3
+        i := index
+        save v1
+        return
+    end
+
+    # Jump to NNN + v0
+    if v2 == 0xB0 begin
+        i := registers
+        # TODO: if jumpQuirk, i += v3
+        load v2 - v2
+        v0 := v3
+        v1 += v2
+        v0 += vF
+        i := pc
+        save v1
+        return
+    end
+    
+    # Get random number, masked by NN into register X
+    if v2 == 0xC0 begin
+        i := registers
+        i += v3
+        v0 := random 0xFF
+        v0 &= v1
+        save v0
+        return
+    end
+
+    if v2 == 0xD0 then jump draw-sprite
+
+    # Skip next opcode if key is pressed / not pressed
+    if v2 == 0xE0 begin
+        i := registers
+        i += v3
+        load v0
+        if v1 == 0x9E begin
+            if v0 key then jump skip-next-opcode
+            return
+        end
+        if v1 == 0xA1 begin
+            if v0 -key then jump skip-next-opcode
+            return
+        end
+        # We should never get here
+        :breakpoint unknown-opcode-E0-v1
+        loop again
+    end
+
+    if v2 == 0xF0 then jump range-F0
+
+    # We should never get here
+    :breakpoint unknown-opcode
+    loop again
+
+: skip-next-opcode
+    i := pc
+    load v0 - v1
+    vF := 2
+    v1 += vF
+    v0 += vF
+    save v0 - v1
+    return
+
+: range-00
+    v2 := v1
+    vF := 0xF0
+    v2 &= vF
+
+    # Scroll the display down N pixels
+    if v2 == 0xC0 begin
+        v1 >>= v1
+        v1 >>= v1
+        v1 >>= v1
+        v1 >>= v1
+        vF := 0xC0
+        v1 |= vF
+        i := scroll-down-smc
+        save v1 - v1
+        0x00
+        : scroll-down-smc
+        0x00
+        return
+    end
+
+    # Clear screen
+    if v1 == 0xE0 begin
+        clear
+        return
+    end
+
+    # Return from subroutine
+    if v1 == 0xEE begin
+        # Load and decrease stack pointer
+        i := sp
+        load v0 - v0
+        v0 -= 2
+        save v0
+        # Restore PC
+        i := stack
+        i += v0
+        load v1
+        i := pc
+        save v1
+        return
+    end
+
+    # Scroll the display right 4 pixels
+    if v1 == 0xFB begin
+        scroll-right
+        return
+    end
+
+    # Scroll the display left 4 pixels
+    if v1 == 0xFC begin
+        scroll-left
+        return
+    end
+
+    # if v1 == 0xFD then jump exit-interpreter
+
+    # Set the display mode to lores
+    if v1 == 0xFE begin
+        lores
+        return
+    end
+
+    # Set the display mode to hires
+    if v1 == 0xFF begin
+        hires
+        return
+    end
+
+    # We should never get here
+    :breakpoint unknown-opcode-00-v1
+    loop again
+
+: do-maths
+    v2 := v1
+    vF := 0x0F
+    v2 &= vF
+    v1 >>= v1
+    v1 >>= v1
+    v1 >>= v1
+    v1 >>= v1
+
+    # Pre-load register Y
+    i := registers
+    i += v1
+    load v4 - v4
+
+    # Pre-load register X
+    i := registers
+    i += v3
+    load v0 - v0
+
+    # Copy value of register Y into register X
+    if v2 == 0x00 begin
+        save v4 - v4
+        return
+    end
+
+    # Register X |= register Y
+    if v2 == 0x01 begin
+        v0 |= v4
+        save v0
+        return
+        # TODO: vfQuirk
+    end
+
+    # Register X &= register Y
+    if v2 == 0x02 begin
+        v0 &= v4
+        save v0
+        return
+        # TODO: vfQuirk
+    end
+
+    # Register X ^= register Y
+    if v2 == 0x03 begin
+        v0 ^= v4
+        save v0
+        return
+        # TODO: vfQuirk
+    end
+
+    # Register X += register Y
+    if v2 == 0x04 begin
+        v0 += v4
+        save v0
+        jump save-flag
+    end
+
+    # Register X -= register Y
+    if v2 == 0x05 begin
+        v0 -= v4
+        save v0
+        jump save-flag
+    end
+
+    # Register X = register Y >> 1
+    if v2 == 0x06 begin
+        v4 >>= v4
+        save v4 - v4
+        jump save-flag
+        # TODO: implement shift-quirk
+    end
+
+    # Register X = register Y - register X
+    if v2 == 0x07 begin
+        v4 -= v0
+        save v4 - v4
+        jump save-flag
+    end
+
+    # Register X = register Y << 1
+    if v2 == 0x0E begin
+        v4 <<= v4
+        save v4 - v4
+        jump save-flag
+        # TODO: implement shift-quirk
+    end
+
+    # We should never get here
+    :breakpoint unknown-opcode-80-v1-v2
+    loop again
+
+: save-flag
+    i := registers
+    v0 := 0xF
+    i += v0
+    save vF - vF
+    return
+
+: draw-sprite
+    # Load value from first register
+    i := registers
+    i += v3
+    load v0
+
+    # Load value from second register
+    v2 := v1
+    v1 >>= v1
+    v1 >>= v1
+    v1 >>= v1
+    v1 >>= v1
+    i := registers
+    i += v1
+    load v1 - v1
+
+    # Set draw height
+    vF := 0x0F
+    v2 &= vF
+    vF := 0x10
+    v2 |= vF
+    i := draw-sprite-smc1
+    save v2 - v2
+
+    # Set i register
+    :alias unpack-hi v4
+    :alias unpack-lo v5
+    :unpack long ram
+    i := index
+    load v2 - v3
+    v5 += v3
+    v4 += vF
+    v4 += v2
+    i := draw-sprite-smc2
+    save v4 - v5
+
+    # Actually do the thing
+    0xF0 0x00
+    : draw-sprite-smc2
+    0x00 0x00
+    0xD0
+    : draw-sprite-smc1
+    0x10
+    return
+
+: range-F0
+    # Pre-load i to point to register X
+    i := registers
+    i += v3
+
+    # Load delay timer into register X
+    if v1 == 0x07 begin
+        v0 := delay
+        save v0
+        return
+    end
+
+    # Wait for key and return in register X
+    if v1 == 0x0A begin
+        v0 := key
+        save v0
+        return
+    end
+
+    # Write register X into delay timer
+    if v1 == 0x15 begin
+        load v0
+        delay := v0
+        return
+    end
+
+    # Write register X to sound timer
+    if v1 == 0x18 begin
+        load v0
+        buzzer := v0
+        return
+    end
+    
+    # Add register X to i
+    if v1 == 0x1E begin
+        load v2 - v2
+        i := index
+        load v0 - v1
+        v1 += v2
+        v0 += vF
+        save v1
+        return
+    end
+
+    # Point i to font sprite for value in register X
+    if v1 == 0x29 begin
+        load v0
+        v1 := v0
+        v1 <<= v1
+        v1 <<= v1
+        v1 += v0
+        v0 := 0
+        i := index
+        save v1
+        return
+    end
+
+    # Point i to big font sprite for value in register X
+    if v1 == 0x30 begin
+        load v0
+        v1 := v0
+        v1 <<= v1
+        v1 <<= v1
+        v1 <<= v1
+        v1 += v0
+        v1 += v0
+        v1 += 80
+        v0 := 0
+        i := index
+        save v1
+        return
+    end
+
+    # BCD encode register X to i
+    if v1 == 0x33 begin
+        load v2 - v2
+        i := index
+        load v1
+        i := ram
+        add-to-i v0 v1
+        bcd v2
+        return
+    end
+
+    # Store registers to memory
+    if v1 == 0x55 begin
+        v2 := 0
+        loop
+            i := registers
+            i += v2
+            load v4 - v4
+            i := index
+            load v1
+            i := ram
+            add-to-i v0 v1
+            i += v2
+            save v4 - v4
+            v2 += 1
+            if v2 <= v3 then
+        again
+        # TODO: If memquirk increase index
+        return
+    end
+
+    # Load registers from memory
+    if v1 == 0x65 begin
+        v2 := 0
+        loop
+            i := index
+            load v1
+            i := ram
+            add-to-i v0 v1
+            i += v2
+            load v1 - v1
+            i := registers
+            i += v2
+            save v1 - v1
+            v2 += 1
+            if v2 <= v3 then
+        again
+        # TODO: If memquirk increase index
+        return
+    end
+
+    # Store registers to userflags
+    if v1 == 0x75 begin
+        v2 := 0
+        loop
+            i := registers
+            i += v2
+            load v4 - v4
+            i := userflags
+            i += v2
+            save v4 - v4
+            v2 += 1
+            if v2 <= v3 then
+        again
+        return
+    end
+
+    # Load registers from userflags
+    if v1 == 0x85 begin
+        v2 := 0
+        loop
+            i := userflags
+            i += v2
+            load v1 - v1
+            i := registers
+            i += v2
+            save v1 - v1
+            v2 += 1
+            if v2 <= v3 then
+        again
+        return
+    end
+
+    # We should never get here
+    :breakpoint unknown-opcode-f0-v1
+    loop again
+

@@ -1,0 +1,8 @@
+{
+    "name": "8-pihc",
+    "scripts": {
+        "copy": "../../chiplet/build/bin/chiplet src/main.8o -P | pbcopy",
+        "assemble": "../../chiplet/build/bin/chiplet src/main.8o -o dist/8-pihc.ch8",
+        "start": "npm run copy && npm run assemble"
+    }
+}
