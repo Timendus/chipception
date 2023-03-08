@@ -7,7 +7,7 @@ Because CHIP-8 interpreters have been written in *every* programming language. E
   * Implement quirks -> pass quirks test for both platforms
     * [x] vfQuirk
     * [x] memQuirk
-    * [ ] disp wait
+    * [x] disp wait
     * [ ] clipping
     * [x] shiftQuirk
     * [x] jumpQuirk

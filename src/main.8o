@@ -14,6 +14,7 @@
     shiftQuirk := 0
     memQuirk := 1
     jumpQuirk := 0
+    dispQuirk := 1
 
     run-interpreter
 
@@ -64,8 +65,11 @@
 
         # Check for SCHIP exit opcode
         i := running
-        load v0
-        if v0 == 1 then
+        load v0 - v0
+        if v0 == state_waiting_for_interrupt then
+            v0 := state_interrupt_triggered
+        save v0
+        if v0 != state_stopped then
     again
     return
 
@@ -74,7 +78,7 @@
     clear
     set sp 0
     set pc 0x200
-    v0 := 1
+    v0 := state_running
     i := running
     save v0
     i := beep-pattern

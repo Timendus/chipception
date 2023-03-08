@@ -25,8 +25,14 @@
 }
 
 # Some long-lived registers and their meanings
-:alias CYCLES vA
-:alias vfQuirk vB
-:alias shiftQuirk vC
-:alias memQuirk vD
-:alias jumpQuirk vE
+:alias CYCLES v9
+:alias vfQuirk vA
+:alias shiftQuirk vB
+:alias memQuirk vC
+:alias jumpQuirk vD
+:alias dispQuirk vE
+
+:const state_stopped 0
+:const state_running 1
+:const state_waiting_for_interrupt 2
+:const state_interrupt_triggered 3

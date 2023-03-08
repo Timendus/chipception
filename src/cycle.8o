@@ -183,6 +183,15 @@
     save v0 - v1
     return
 
+: step-back-one-opcode
+    i := pc
+    load v0 - v1
+    vF := 2
+    v1 -= vF
+    if vF == 0 then v0 -= 1
+    save v0 - v1
+    return
+
 : range-00
     v2 := v1
     vF := 0xF0
@@ -238,17 +247,12 @@
         return
     end
 
+    # Exit the interpreter, back to the menu
     if v1 == 0xFD begin
         i := running
-        v0 := 0
+        v0 := state_stopped
         save v0
-        i := pc
-        load v1 - v1
-        vF := 1
-        v1 -= vF
-        v0 -= vF
-        save v1
-        return
+        jump step-back-one-opcode
     end
 
     # Set the display mode to lores
@@ -374,6 +378,22 @@
     return
 
 : draw-sprite
+    if dispQuirk == 1 begin
+        i := running
+        load v0 - v0
+        if v0 == state_waiting_for_interrupt then
+            jump step-back-one-opcode
+        if v0 == state_running begin
+            v0 := state_waiting_for_interrupt
+            save v0
+            jump step-back-one-opcode
+        end
+        if v0 == state_interrupt_triggered begin
+            v0 := state_running
+            save v0
+        end
+    end
+
     # Load value from first register
     i := registers
     i += v3
