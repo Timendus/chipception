@@ -1,13 +1,13 @@
 :segment data
 
 : rom-logo
-    :include "roms/logo.ch8"
+    :include "../roms/logo.ch8"
 
 : rom-test-suite
-    :include "roms/chip8-test-suite.ch8"
+    :include "../roms/chip8-test-suite.ch8"
 
 : rom-ibm
-    :include "roms/ibm.ch8"
+    :include "../roms/ibm.ch8"
 
 : rom-3d-vipr-maze
-    :include "roms/3dviprmaze-schip.ch8"
+    :include "../roms/3dviprmaze-schip.ch8"
