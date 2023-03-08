@@ -9,8 +9,8 @@ Because CHIP-8 interpreters have been written in *every* programming language. E
     * [x] memQuirk
     * [ ] disp wait
     * [ ] clipping
-    * [ ] shiftQuirk
-    * [ ] jumpQuirk
+    * [x] shiftQuirk
+    * [x] jumpQuirk
   * Do some more testing
   * Test hires and other SCHIP features
 

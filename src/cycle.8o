@@ -128,7 +128,7 @@
     # Jump to NNN + v0
     if v2 == 0xB0 begin
         i := registers
-        # TODO: if jumpQuirk, i += v3
+        if jumpQuirk == 1 then i += v3
         load v2 - v2
         v0 := v3
         v1 += v2
@@ -341,10 +341,10 @@
 
     # Register X = register Y >> 1
     if v2 == 0x06 begin
+        if shiftQuirk == 1 then v4 := v0
         v4 >>= v4
         save v4 - v4
         jump save-flag
-        # TODO: implement shift-quirk
     end
 
     # Register X = register Y - register X
@@ -356,10 +356,10 @@
 
     # Register X = register Y << 1
     if v2 == 0x0E begin
+        if shiftQuirk == 1 then v4 := v0
         v4 <<= v4
         save v4 - v4
         jump save-flag
-        # TODO: implement shift-quirk
     end
 
     # We should never get here
