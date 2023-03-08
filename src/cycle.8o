@@ -238,7 +238,18 @@
         return
     end
 
-    # if v1 == 0xFD then jump exit-interpreter
+    if v1 == 0xFD begin
+        i := running
+        v0 := 0
+        save v0
+        i := pc
+        load v1 - v1
+        vF := 1
+        v1 -= vF
+        v0 -= vF
+        save v1
+        return
+    end
 
     # Set the display mode to lores
     if v1 == 0xFE begin
@@ -285,24 +296,33 @@
     if v2 == 0x01 begin
         v0 |= v4
         save v0
+        if vfQuirk == 1 begin
+            vF := 0
+            jump save-flag
+        end
         return
-        # TODO: vfQuirk
     end
 
     # Register X &= register Y
     if v2 == 0x02 begin
         v0 &= v4
         save v0
+        if vfQuirk == 1 begin
+            vF := 0
+            jump save-flag
+        end
         return
-        # TODO: vfQuirk
     end
 
     # Register X ^= register Y
     if v2 == 0x03 begin
         v0 ^= v4
         save v0
+        if vfQuirk == 1 begin
+            vF := 0
+            jump save-flag
+        end
         return
-        # TODO: vfQuirk
     end
 
     # Register X += register Y
@@ -405,7 +425,10 @@
 
     # Load delay timer into register X
     if v1 == 0x07 begin
-        v0 := delay
+        i := delay-timer
+        load v0
+        i := registers
+        i += v3
         save v0
         return
     end
@@ -420,14 +443,16 @@
     # Write register X into delay timer
     if v1 == 0x15 begin
         load v0
-        delay := v0
+        i := delay-timer
+        save v0
         return
     end
 
     # Write register X to sound timer
     if v1 == 0x18 begin
         load v0
-        buzzer := v0
+        i := sound-timer
+        save v0
         return
     end
     
@@ -498,7 +523,14 @@
             v2 += 1
             if v2 <= v3 then
         again
-        # TODO: If memquirk increase index
+        if memQuirk == 1 begin
+            i := index
+            load v0 - v1
+            v3 += 1
+            v1 += v3
+            v0 += vF
+            save v1
+        end
         return
     end
 
@@ -518,7 +550,14 @@
             v2 += 1
             if v2 <= v3 then
         again
-        # TODO: If memquirk increase index
+        if memQuirk == 1 begin
+            i := index
+            load v0 - v1
+            v3 += 1
+            v1 += v3
+            v0 += vF
+            save v1
+        end
         return
     end
 

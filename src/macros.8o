@@ -23,3 +23,10 @@
     again
     i += REGb
 }
+
+# Some long-lived registers and their meanings
+:alias CYCLES vA
+:alias vfQuirk vB
+:alias shiftQuirk vC
+:alias memQuirk vD
+:alias jumpQuirk vE
