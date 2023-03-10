@@ -32,7 +32,9 @@
 :alias jumpQuirk vD
 :alias dispQuirk vE
 
-:const state_stopped 0
-:const state_running 1
-:const state_waiting_for_interrupt 2
-:const state_interrupt_triggered 3
+# A few constants giving meaning to magic values
+:const STATE_STOPPED 0
+:const STATE_RUNNING 1
+:const STATE_WAITING_FOR_INTERRUPT 2
+:const STATE_INTERRUPT_TRIGGERED 3
+

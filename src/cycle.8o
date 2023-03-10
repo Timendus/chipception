@@ -250,7 +250,7 @@
     # Exit the interpreter, back to the menu
     if v1 == 0xFD begin
         i := running
-        v0 := state_stopped
+        v0 := STATE_STOPPED
         save v0
         jump step-back-one-opcode
     end
@@ -381,15 +381,15 @@
     if dispQuirk == 1 begin
         i := running
         load v0 - v0
-        if v0 == state_waiting_for_interrupt then
+        if v0 == STATE_WAITING_FOR_INTERRUPT then
             jump step-back-one-opcode
-        if v0 == state_running begin
-            v0 := state_waiting_for_interrupt
+        if v0 == STATE_RUNNING begin
+            v0 := STATE_WAITING_FOR_INTERRUPT
             save v0
             jump step-back-one-opcode
         end
-        if v0 == state_interrupt_triggered begin
-            v0 := state_running
+        if v0 == STATE_INTERRUPT_TRIGGERED begin
+            v0 := STATE_RUNNING
             save v0
         end
     end
