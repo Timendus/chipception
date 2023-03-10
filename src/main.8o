@@ -28,11 +28,11 @@
         delay := v0
 
         # How many cycles per frame?
-        CYCLES := 50
+        cycles := 50
         loop
             run-cycle
-            CYCLES -= 1
-            if CYCLES != 0 then
+            cycles -= 1
+            if cycles != 0 then
         again
 
         # Wait to sync up with reality

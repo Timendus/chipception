@@ -25,12 +25,16 @@
 }
 
 # Some long-lived registers and their meanings
-:alias CYCLES v9
-:alias vfQuirk vA
-:alias shiftQuirk vB
-:alias memQuirk vC
-:alias jumpQuirk vD
-:alias dispQuirk vE
+:alias cycles v8
+:alias vfQuirk v9
+:alias shiftQuirk vA
+:alias memQuirk vB
+:alias jumpQuirk vC
+:alias dispQuirk vD
+:alias clipQuirk vE
+
+# Show the registers in the memory monitor
+:monitor v7 "displayMode: %1i\ncycles: %1i\nvfQuirk: %1i\nshiftQuirk: %1i\nmemQuirk: %1i\njumpQuirk: %1i\ndispQuirk: %1i\nclipQuirk: %1i\n"
 
 # A few constants giving meaning to magic values
 :const STATE_STOPPED 0

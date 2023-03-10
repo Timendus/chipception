@@ -114,9 +114,9 @@
     0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
 
 
-:monitor pc 2
-:monitor sp 2
-:monitor index 2
+:monitor pc "0x%2x"
+:monitor sp 1
+:monitor index "0x%2x"
 :monitor registers 16
 :monitor stack 12
 :monitor delay-timer 1
