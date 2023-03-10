@@ -28,6 +28,8 @@
     0
 : running
     1
+: display-mode
+    0
 : userflags
     0 0 0 0 0 0 0 0
     0 0 0 0 0 0 0 0

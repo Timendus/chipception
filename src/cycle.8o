@@ -257,12 +257,18 @@
 
     # Set the display mode to lores
     if v1 == 0xFE begin
+        i := display-mode
+        v0 := DISPLAY_LORES
+        save v0
         lores
         return
     end
 
     # Set the display mode to hires
     if v1 == 0xFF begin
+        i := display-mode
+        v0 := DISPLAY_HIRES
+        save v0
         hires
         return
     end
@@ -408,10 +414,27 @@
     i := registers
     i += v1
     load v1 - v1
+    i := display-mode
+    load v3 - v3
+    if v3 == DISPLAY_LORES then v4 := 31
+    if v3 == DISPLAY_HIRES then v4 := 63
+    v1 &= v4
+    v4 += 1
 
     # Set draw height
     vF := 0x0F
     v2 &= vF
+    if clipQuirk == 1 begin
+        # if v1 > (height - v2):
+        #     v2 = height - v1 
+        v3 := v4
+        v3 -= v2
+        if v1 > v3 begin
+            v2 := v4
+            v2 -= v1
+        end
+        v6 := v2 # Save height for later
+    end
     vF := 0x10
     v2 |= vF
     i := draw-sprite-smc1
@@ -426,17 +449,71 @@
     v5 += v3
     v4 += vF
     v4 += v2
+    if clipQuirk == 1 begin
+        # if v0 > (width - spriteWidth):
+        #     spriteWidth = width - v0
+        i := display-mode
+        load v2 - v2
+        if v2 == DISPLAY_LORES then v3 := 63
+        if v2 == DISPLAY_HIRES then v3 := 127
+        v0 &= v3 # Mask X coordinate
+        v3 += 1
+        v2 := v3
+        v2 -= 8  # TODO: 16 pixels wide sprites
+        if v0 > v2 begin
+            v2 := v3
+            v2 -= v0
+            # v2 is width, now make a mask
+            vF := 8
+            v2 =- vF
+            v3 := 0xFF
+            loop
+                v3 <<= v3
+                v2 -= 1
+                if v2 != 0 then
+            again
+            v2 := 0
+            loop
+                i := draw-sprite-smc3
+                save v4 - v5
+                0xF0 0x00   # i := long ...
+                : draw-sprite-smc3
+                0x00 0x00   # sprite address
+                # i points to start of sprite
+                i += v2
+                load v7 - v7
+                v7 &= v3  # Mask out overflowing bits / pixels
+                i := draw-sprite-store
+                i += v2
+                save v7 - v7
+                v2 += 1
+                if v2 != v6 then
+            again
+            :alias unpack-hi v4
+            :alias unpack-lo v5
+            :unpack long draw-sprite-store
+        end
+    end
     i := draw-sprite-smc2
     save v4 - v5
 
     # Actually do the thing
-    0xF0 0x00
+    0xF0 0x00       # i := long ...
     : draw-sprite-smc2
-    0x00 0x00
-    0xD0
-    : draw-sprite-smc1
-    0x10
+    0x00 0x00       # sprite address
+    :next draw-sprite-smc1
+    sprite v0 v1 8  # 8 overwritten by actual height
     return
+
+:segment data
+
+: draw-sprite-store
+    0 0 0 0 0 0 0 0
+    0 0 0 0 0 0 0 0
+    0 0 0 0 0 0 0 0
+    0 0 0 0 0 0 0 0
+
+:segment code
 
 : range-F0
     # Pre-load i to point to register X

@@ -11,3 +11,7 @@
 
 : rom-3d-vipr-maze
     :include "../roms/3dviprmaze-schip.ch8"
+
+: rom-clip-test
+    :include "../roms/sprite-clip-test.ch8"
+

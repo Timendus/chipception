@@ -1,0 +1,41 @@
+: main
+    clear
+    v0 := 32
+    v1 := 16
+    i := cursor
+    sprite v0 v1 8
+    loop
+        sprite v0 v1 8
+
+        v3 := 5
+        if v3 key then
+            v1 -= 1
+        v3 := 7
+        if v3 key then
+            v0 -= 1
+        v3 := 8
+        if v3 key then
+            v1 += 1
+        v3 := 9
+        if v3 key then
+            v0 += 1
+
+        sprite v0 v1 8
+
+        v2 := 2
+        delay := v2
+        loop
+            v2 := delay
+            if v2 != 0 then
+        again
+    again
+
+: cursor
+    0b00011000
+    0b00111100
+    0b01111110
+    0b11100111
+    0b11100111
+    0b01111110
+    0b00111100
+    0b00011000

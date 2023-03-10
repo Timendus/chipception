@@ -1,14 +1,20 @@
-:macro make REGa REGb WORD {
+:macro make16 REGa REGb WORD {
     :calc hi { ( WORD >> 8 ) & 0xFF }
     :calc lo { WORD & 0xFF }
     REGa := hi
     REGb := lo
 }
 
-:macro set LOCATION WORD {
-    make v0 v1 WORD
+:macro set16 LOCATION WORD {
+    make16 v0 v1 WORD
     i := LOCATION
     save v1
+}
+
+:macro set8 LOCATION BYTE {
+    i := LOCATION
+    vF := BYTE
+    save vF
 }
 
 # Add (REGa, REGb) as one 16-bit number to the index register (destructive to REGa)
@@ -34,7 +40,7 @@
 :alias clipQuirk vE
 
 # Show the registers in the memory monitor
-:monitor v7 "displayMode: %1i\ncycles: %1i\nvfQuirk: %1i\nshiftQuirk: %1i\nmemQuirk: %1i\njumpQuirk: %1i\ndispQuirk: %1i\nclipQuirk: %1i\n"
+:monitor v8 "cycles: %1i\nvfQuirk: %1i\nshiftQuirk: %1i\nmemQuirk: %1i\njumpQuirk: %1i\ndispQuirk: %1i\nclipQuirk: %1i\n"
 
 # A few constants giving meaning to magic values
 :const STATE_STOPPED 0
@@ -42,3 +48,5 @@
 :const STATE_WAITING_FOR_INTERRUPT 2
 :const STATE_INTERRUPT_TRIGGERED 3
 
+:const DISPLAY_LORES 0
+:const DISPLAY_HIRES 1

@@ -9,10 +9,12 @@ Because CHIP-8 interpreters have been written in *every* programming language. E
     * [x] memQuirk
     * [x] disp wait
     * [ ] clipping
+      * 16x16 sprite clipping
     * [x] shiftQuirk
     * [x] jumpQuirk
   * Do some more testing
   * Test hires and other SCHIP features
+  * Issue: if you jump in "ant", it exits the interpreter
 
 ## Idea list
 

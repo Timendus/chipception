@@ -14,7 +14,8 @@
     shiftQuirk := 0
     memQuirk := 1
     jumpQuirk := 0
-    dispQuirk := 1
+    dispQuirk := 0
+    clipQuirk := 1
 
     run-interpreter
 
@@ -76,11 +77,12 @@
 # Lazily reset the interpreter. Also sets a nice tone for the beep.
 : reset
     clear
-    set sp 0
-    set pc 0x200
-    v0 := STATE_RUNNING
-    i := running
-    save v0
+
+    set16 pc           0x200
+    set8  sp           0
+    set8  display-mode DISPLAY_LORES
+    set8  running      STATE_RUNNING
+
     i := beep-pattern
     audio
     v0 := 70
@@ -89,7 +91,7 @@
 
 # (v1, v2) point to program data, copy it into RAM at 0x200
 : load-program
-    make v3 v4 0
+    make16 v3 v4 0
     loop
         i := load-program-smc
         save v1 - v2
