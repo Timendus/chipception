@@ -4,23 +4,27 @@ Because CHIP-8 interpreters have been written in *every* programming language. E
 
 ## TODO list
 
-  * Implement quirks -> pass quirks test for both platforms
+  * Implement quirks -> pass quirks test for both platforms -> Success! 🎉
     * [x] vfQuirk
     * [x] memQuirk
     * [x] disp wait
-    * [ ] clipping
-      * 16x16 sprite clipping
+    * [x] clipping
+      * [ ] 16x16 sprite clipping
     * [x] shiftQuirk
     * [x] jumpQuirk
-  * Do some more testing
   * Test hires and other SCHIP features
   * Issue: if you jump in "ant", it exits the interpreter
 
 ## Idea list
 
-  * Add menu to select ROM
+  * Run multiple programs at once?
+  * Make a "OS" like GUI?
+    * Use hires, then lores programs can be shown in windows floating on a "desktop"
+    * Needs memory management to allocate space for a starting program
+    * Needs annotations for how much memory a program needs to run (maybe in CBF?)
+    * Can also have "native" programs, that use specific opcodes to have different resolutions and stuff
+    * DOS style UI? Or Win3.1? Or Win95? Or MacOS?
   * Allow seleting interpreter settings in menu
   * Show interpreter internals in overlay on plane 2
   * Support CBF files?
-  * Make a "OS" like GUI?
-  * Run multiple programs at once?
+  

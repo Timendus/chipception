@@ -516,7 +516,7 @@
     0x00 0x00       # sprite address
     :next draw-sprite-smc1
     sprite v0 v1 8  # 8 overwritten by actual height
-    return
+    jump save-flag
 
 :segment data
 
