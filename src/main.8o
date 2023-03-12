@@ -1,19 +1,17 @@
 :include "macros.8o"
 
 : main
-    reset
-
-    :alias unpack-hi v1
-    :alias unpack-lo v2
-    :unpack long chip-8-font
-    load-font
-    :unpack long rom-test-suite
-    load-program
-    set-quirks CHIP8
-    run-interpreter
-
-    :breakpoint done-executing
-    loop again
+    loop
+        reset
+        :alias unpack-hi v1
+        :alias unpack-lo v2
+        :unpack long chip-8-font
+        load-font
+        :unpack long rom-test-suite
+        load-program
+        set-quirks CHIP8
+        run-interpreter
+    again
 
 # Run until program exits or magic key combo is pressed
 : run-interpreter
@@ -22,7 +20,7 @@
         delay := v0
 
         # How many cycles per frame?
-        cycles := 50
+        cycles := 30
         loop
             run-cycle
             cycles -= 1
