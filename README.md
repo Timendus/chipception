@@ -1,6 +1,6 @@
 # 8ception
 
-Because CHIP-8 interpreters have been written in *every* programming language. Except in CHIP-8 💡😄
+Because CHIP-8 interpreters have been written in *every* programming language. Except for CHIP-8 💡😄
 
 ## TODO list
 
@@ -13,7 +13,6 @@ Because CHIP-8 interpreters have been written in *every* programming language. E
     * [x] shiftQuirk
     * [x] jumpQuirk
   * Test hires and other SCHIP features
-  * Issue: if you jump in "ant", it exits the interpreter
 
 ## Idea list
 
