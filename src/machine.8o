@@ -30,6 +30,8 @@
     1
 : display-mode
     0
+: quirks
+    0
 : userflags
     0 0 0 0 0 0 0 0
     0 0 0 0 0 0 0 0
@@ -124,4 +126,6 @@
 :monitor delay-timer 1
 :monitor sound-timer 1
 :monitor running 1
+:monitor display-mode 1
+:monitor quirks "%1b"
 :monitor userflags 16

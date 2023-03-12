@@ -127,8 +127,9 @@
 
     # Jump to NNN + v0
     if v2 == 0xB0 begin
+        get-quirk v0 JUMP_QUIRK
         i := registers
-        if jumpQuirk == 1 then i += v3
+        if v0 != 0 then i += v3
         load v2 - v2
         v0 := v3
         v1 += v2
@@ -306,7 +307,8 @@
     if v2 == 0x01 begin
         v0 |= v4
         save v0
-        if vfQuirk == 1 begin
+        get-quirk v0 VF_QUIRK
+        if v0 != 0 begin
             vF := 0
             jump save-flag
         end
@@ -317,7 +319,8 @@
     if v2 == 0x02 begin
         v0 &= v4
         save v0
-        if vfQuirk == 1 begin
+        get-quirk v0 VF_QUIRK
+        if v0 != 0 begin
             vF := 0
             jump save-flag
         end
@@ -328,7 +331,8 @@
     if v2 == 0x03 begin
         v0 ^= v4
         save v0
-        if vfQuirk == 1 begin
+        get-quirk v0 VF_QUIRK
+        if v0 != 0 begin
             vF := 0
             jump save-flag
         end
@@ -351,8 +355,11 @@
 
     # Register X = register Y >> 1
     if v2 == 0x06 begin
-        if shiftQuirk == 1 then v4 := v0
+        get-quirk v1 SHIFT_QUIRK
+        if v1 != 0 then v4 := v0
         v4 >>= v4
+        i := registers
+        i += v3
         save v4 - v4
         jump save-flag
     end
@@ -366,8 +373,11 @@
 
     # Register X = register Y << 1
     if v2 == 0x0E begin
-        if shiftQuirk == 1 then v4 := v0
+        get-quirk v1 SHIFT_QUIRK
+        if v1 != 0 then v4 := v0
         v4 <<= v4
+        i := registers
+        i += v3
         save v4 - v4
         jump save-flag
     end
@@ -384,7 +394,8 @@
     return
 
 : draw-sprite
-    if dispQuirk == 1 begin
+    get-quirk v0 DISP_QUIRK
+    if v0 != 0 begin
         i := running
         load v0 - v0
         if v0 == STATE_WAITING_FOR_INTERRUPT then
@@ -424,7 +435,8 @@
     # Set draw height
     vF := 0x0F
     v2 &= vF
-    if clipQuirk == 1 begin
+    get-quirk v3 CLIP_QUIRK
+    if v3 != 0 begin
         # if v1 > (height - v2):
         #     v2 = height - v1 
         v3 := v4
@@ -449,7 +461,8 @@
     v5 += v3
     v4 += vF
     v4 += v2
-    if clipQuirk == 1 begin
+    get-quirk v2 CLIP_QUIRK
+    if v2 != 0 begin
         # if v0 > (width - spriteWidth):
         #     spriteWidth = width - v0
         i := display-mode
@@ -620,7 +633,8 @@
             v2 += 1
             if v2 <= v3 then
         again
-        if memQuirk == 1 begin
+        get-quirk v0 MEM_QUIRK
+        if v0 != 0 begin
             i := index
             load v0 - v1
             v3 += 1
@@ -647,7 +661,8 @@
             v2 += 1
             if v2 <= v3 then
         again
-        if memQuirk == 1 begin
+        get-quirk v0 MEM_QUIRK
+        if v0 != 0 begin
             i := index
             load v0 - v1
             v3 += 1

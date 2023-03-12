@@ -31,16 +31,8 @@
 }
 
 # Some long-lived registers and their meanings
-:alias cycles v8
-:alias vfQuirk v9
-:alias shiftQuirk vA
-:alias memQuirk vB
-:alias jumpQuirk vC
-:alias dispQuirk vD
-:alias clipQuirk vE
-
-# Show the registers in the memory monitor
-:monitor v8 "cycles: %1i\nvfQuirk: %1i\nshiftQuirk: %1i\nmemQuirk: %1i\njumpQuirk: %1i\ndispQuirk: %1i\nclipQuirk: %1i\n"
+:alias cycles vE
+:monitor cycles 1
 
 # A few constants giving meaning to magic values
 :const STATE_STOPPED 0
@@ -50,3 +42,41 @@
 
 :const DISPLAY_LORES 0
 :const DISPLAY_HIRES 1
+
+:const VF_QUIRK    0b10000000
+:const SHIFT_QUIRK 0b01000000
+:const MEM_QUIRK   0b00100000
+:const JUMP_QUIRK  0b00010000
+:const DISP_QUIRK  0b00001000
+:const CLIP_QUIRK  0b00000100
+
+:calc CHIP8     { VF_QUIRK + MEM_QUIRK + CLIP_QUIRK }
+:calc VIP       { VF_QUIRK + MEM_QUIRK + DISP_QUIRK + CLIP_QUIRK }
+:calc SUPERCHIP { SHIFT_QUIRK + JUMP_QUIRK + CLIP_QUIRK }
+
+:macro get-quirk REG QUIRK {
+    i := quirks
+    load REG - REG
+    vF := QUIRK
+    REG &= vF
+}
+:macro set-quirk QUIRK {
+    i := quirks
+    load v0 - v0
+    vF := QUIRK
+    v0 |= vF
+    save v0 - v0
+}
+:macro reset-quirk QUIRK {
+    :calc INVERTED { ~ QUIRK }
+    i := quirks
+    load v0 - v0
+    vF := INVERTED
+    v0 &= vF
+    save v0 - v0
+}
+:macro set-quirks QUIRKS {
+    i := quirks
+    vF := QUIRKS
+    save vF - vF
+}

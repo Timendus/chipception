@@ -9,14 +9,7 @@
     load-font
     :unpack long rom-test-suite
     load-program
-
-    vfQuirk := 1
-    shiftQuirk := 0
-    memQuirk := 1
-    jumpQuirk := 0
-    dispQuirk := 0
-    clipQuirk := 1
-
+    set-quirks CHIP8
     run-interpreter
 
     :breakpoint done-executing
