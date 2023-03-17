@@ -1,3 +1,31 @@
+# The machine definition offsets
+
+:const PTR_PC 0
+:calc  PTR_SP               { PTR_PC + 2 }
+:calc  PTR_REGISTERS        { PTR_SP + 1 }
+:calc  PTR_INDEX            { PTR_REGISTERS + 16 }
+:calc  PTR_STACK            { PTR_INDEX + 2 }
+:calc  PTR_DELAY_TIMER      { PTR_STACK + 24 }
+:calc  PTR_SOUND_TIMER      { PTR_DELAY_TIMER + 1 }
+:calc  PTR_USERFLAGS        { PTR_SOUND_TIMER + 1 }
+
+:calc  PTR_RUNNING          { PTR_USERFLAGS + 16 }
+:calc  PTR_DISPLAY_MODE     { PTR_RUNNING + 1 }
+:calc  PTR_QUIRKS           { PTR_DISPLAY_MODE + 1 }
+:calc  PTR_CYCLES_PER_FRAME { PTR_QUIRKS + 1 }
+:calc  PTR_CYCLE            { PTR_CYCLES_PER_FRAME + 1 }
+:calc  PTR_WINDOW_POSITION  { PTR_CYCLE + 1 }
+
+:calc  PTR_RAM              { PTR_WINDOW_POSITION + 2 }
+:calc  MACHINE_SIZE         { PTR_RAM + 4096 }
+
+:macro point-to PTR {
+    vF := PTR
+    pointer-to
+}
+
+# Helpers for setting values in memory
+
 :macro make16 REGa REGb WORD {
     :calc hi { ( WORD >> 8 ) & 0xFF }
     :calc lo { WORD & 0xFF }
@@ -5,14 +33,14 @@
     REGb := lo
 }
 
-:macro set16 LOCATION WORD {
+:macro set16 PTR WORD {
     make16 v0 v1 WORD
-    i := LOCATION
+    point-to PTR
     save v1
 }
 
-:macro set8 LOCATION BYTE {
-    i := LOCATION
+:macro set8 PTR BYTE {
+    point-to PTR
     vF := BYTE
     save vF - vF
 }
@@ -40,6 +68,8 @@
 :const DISPLAY_LORES 0
 :const DISPLAY_HIRES 1
 
+# Constants and macros for quirks
+
 :const VF_QUIRK    0b10000000
 :const SHIFT_QUIRK 0b01000000
 :const MEM_QUIRK   0b00100000
@@ -52,13 +82,13 @@
 :calc SUPERCHIP { SHIFT_QUIRK + JUMP_QUIRK + CLIP_QUIRK }
 
 :macro get-quirk REG QUIRK {
-    i := quirks
+    point-to PTR_QUIRKS
     load REG - REG
     vF := QUIRK
     REG &= vF
 }
 :macro set-quirk QUIRK {
-    i := quirks
+    point-to PTR_QUIRKS
     load v0 - v0
     vF := QUIRK
     v0 |= vF
@@ -66,14 +96,14 @@
 }
 :macro reset-quirk QUIRK {
     :calc INVERTED { ~ QUIRK }
-    i := quirks
+    point-to PTR_QUIRKS
     load v0 - v0
     vF := INVERTED
     v0 &= vF
     save v0 - v0
 }
 :macro set-quirks QUIRKS {
-    i := quirks
+    point-to PTR_QUIRKS
     vF := QUIRKS
     save vF - vF
 }

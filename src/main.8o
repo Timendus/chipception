@@ -21,13 +21,13 @@
         delay := v0
 
         # Run the CPU for the requested number of cycles
-        i := cycles-per-frame
+        point-to PTR_CYCLES_PER_FRAME
         load v0
-        i := cycle
+        point-to PTR_CYCLE
         save v0
         loop
             run-cycle
-            i := cycle
+            point-to PTR_CYCLE
             load v0 - v0
             v0 -= 1
             save v0
@@ -41,11 +41,11 @@
         again
 
         # Decrement timers and play sound
-        i := delay-timer
+        point-to PTR_DELAY_TIMER
         load v0 - v0
         if v0 != 0 then v0 -= 1
         save v0
-        i := sound-timer
+        point-to PTR_SOUND_TIMER
         load v0 - v0
         v1 := 0
         if v0 != 0 begin
@@ -63,7 +63,7 @@
         end
 
         # Check for SCHIP exit opcode
-        i := running
+        point-to PTR_RUNNING
         load v0 - v0
         if v0 == STATE_WAITING_FOR_INTERRUPT then
             v0 := STATE_INTERRUPT_TRIGGERED
@@ -76,11 +76,11 @@
 : reset
     clear
 
-    set16 pc               0x200
-    set8  sp               0
-    set8  display-mode     DISPLAY_LORES
-    set8  running          STATE_RUNNING
-    set8  cycles-per-frame 30
+    set16 PTR_PC               0x200
+    set8  PTR_SP               0
+    set8  PTR_DISPLAY_MODE     DISPLAY_LORES
+    set8  PTR_RUNNING          STATE_RUNNING
+    set8  PTR_CYCLES_PER_FRAME 30
 
     i := beep-pattern
     audio
@@ -101,7 +101,7 @@
         load-program-add
         # i == byte within program
         load v0
-        i := ram
+        point-to PTR_RAM
         v3 += 2
         load-program-add
         v3 -= 2
@@ -134,12 +134,17 @@
         0x00 0x00
         i += v3
         load v0
-        i := ram
+        point-to PTR_RAM
         i += v3
         save v0
         v3 += 1
         if v3 != 180 then
     again
+    return
+
+: pointer-to
+    i := long free-memory
+    i += vF
     return
 
 :segment data
@@ -148,6 +153,8 @@
     0xFF 0x00 0xFF 0x00 0xFF 0x00 0xFF 0x00 0xFF 0x00 0xFF 0x00 0xFF 0x00 0xFF 0x00
 
 :include "cycle.8o"
-:include "machine.8o"
 :include "fonts.8o"
 :include "roms.8o"
+
+: free-memory
+    # Starts here
