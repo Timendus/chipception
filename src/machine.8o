@@ -1,5 +1,7 @@
 :segment data
 
+# CPU state
+
 : pc
     0 0
 : sp
@@ -26,15 +28,24 @@
     0
 : sound-timer
     0
+: userflags
+    0 0 0 0 0 0 0 0
+    0 0 0 0 0 0 0 0
+
+# Meta data
+
 : running
     1
 : display-mode
     0
 : quirks
     0
-: userflags
-    0 0 0 0 0 0 0 0
-    0 0 0 0 0 0 0 0
+: cycles-per-frame
+    30
+: cycle
+    0
+
+# Memory
 
 : ram
     # Address 0x00
@@ -117,6 +128,7 @@
     0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
     0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
 
+# Debugging information for Octo
 
 :monitor pc "0x%2x"
 :monitor sp 1
@@ -125,7 +137,10 @@
 :monitor stack 12
 :monitor delay-timer 1
 :monitor sound-timer 1
+:monitor userflags 16
+
 :monitor running 1
 :monitor display-mode 1
 :monitor quirks "%1b"
-:monitor userflags 16
+:monitor cycles-per-frame 1
+:monitor cycle 1

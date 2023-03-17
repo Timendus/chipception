@@ -19,12 +19,18 @@
         v0 := 1
         delay := v0
 
-        # How many cycles per frame?
-        cycles := 30
+        # Run the CPU for the requested number of cycles
+        i := cycles-per-frame
+        load v0
+        i := cycle
+        save v0
         loop
             run-cycle
-            cycles -= 1
-            if cycles != 0 then
+            i := cycle
+            load v0 - v0
+            v0 -= 1
+            save v0
+            if v0 != 0 then
         again
 
         # Wait to sync up with reality
@@ -69,10 +75,11 @@
 : reset
     clear
 
-    set16 pc           0x200
-    set8  sp           0
-    set8  display-mode DISPLAY_LORES
-    set8  running      STATE_RUNNING
+    set16 pc               0x200
+    set8  sp               0
+    set8  display-mode     DISPLAY_LORES
+    set8  running          STATE_RUNNING
+    set8  cycles-per-frame 30
 
     i := beep-pattern
     audio

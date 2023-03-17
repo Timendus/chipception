@@ -14,7 +14,7 @@
 :macro set8 LOCATION BYTE {
     i := LOCATION
     vF := BYTE
-    save vF
+    save vF - vF
 }
 
 # Add (REGa, REGb) as one 16-bit number to the index register (destructive to REGa)
@@ -30,11 +30,8 @@
     i += REGb
 }
 
-# Some long-lived registers and their meanings
-:alias cycles vE
-:monitor cycles 1
-
 # A few constants giving meaning to magic values
+
 :const STATE_STOPPED 0
 :const STATE_RUNNING 1
 :const STATE_WAITING_FOR_INTERRUPT 2
