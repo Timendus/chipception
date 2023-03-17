@@ -1,6 +1,7 @@
 :include "macros.8o"
 
 : main
+    hires
     loop
         reset
         :alias unpack-hi v1

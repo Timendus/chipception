@@ -510,6 +510,11 @@
     i := draw-sprite-smc2
     save v4 - v5
 
+    point-to PTR_WINDOW_POSITION
+    load v2 - v3
+    v0 += v2
+    v1 += v3
+
     # Actually do the thing
     0xF0 0x00       # i := long ...
     : draw-sprite-smc2

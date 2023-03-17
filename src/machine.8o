@@ -44,6 +44,8 @@
     30
 : cycle
     0
+: window-position
+    0 0
 
 # Memory
 
