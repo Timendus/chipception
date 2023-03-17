@@ -556,9 +556,16 @@
 
     # Wait for key and return in register X
     if v1 == 0x0A begin
-        v0 := key
-        save v0
-        return
+        v0 := 0
+        loop
+            if v0 key begin
+                save v0
+                return
+            end
+            v0 += 1
+            if v0 != 0x10 then
+        again
+        jump step-back-one-opcode
     end
 
     # Write register X into delay timer

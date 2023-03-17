@@ -6,14 +6,13 @@ Because CHIP-8 interpreters have been written in *every* programming language. E
 
   * 16x16 sprite clipping
   * Test hires and other SCHIP features
-  * Key test not halting
+  * Key test: not released
   * Framerate test doesn't clear screen (and doesn't run as fast as it should..?)
 
   * Interpreter multiplexing
     * `clear` opcode clears the whole screen
     * `scroll` opcodes shift the whole screen
     * `lores` and `hires` opcodes mess with rendering
-    * `key` opcode halts all interpreters
 
 ## Idea list
 
