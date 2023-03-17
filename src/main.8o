@@ -83,6 +83,7 @@
 
         # Run all the timer stuff for each CPU
         current-machine := 0
+        vD := 0
         loop
             select-machine
             # Decrement timers and play sound
@@ -92,13 +93,11 @@
             save v0
             point-to PTR_SOUND_TIMER
             load v0 - v0
-            v1 := 0
             if v0 != 0 begin
                 v0 -= 1
-                v1 := 1
+                vD := 1
             end
             save v0
-            buzzer := v1
 
             # Check if we're waiting for dispQuirk
             point-to PTR_RUNNING
@@ -110,6 +109,7 @@
             current-machine += 1
             if current-machine != NUM_MACHINES then
         again
+        buzzer := vD
     again
 
 # Lazily reset the interpreter
