@@ -1,25 +1,25 @@
 # The machine definition offsets
 
-:const PTR_PC 0
-:calc  PTR_SP                { PTR_PC + 2 }
-:calc  PTR_REGISTERS         { PTR_SP + 1 }
-:calc  PTR_INDEX             { PTR_REGISTERS + 16 }
-:calc  PTR_STACK             { PTR_INDEX + 2 }
-:calc  PTR_DELAY_TIMER       { PTR_STACK + 24 }
-:calc  PTR_SOUND_TIMER       { PTR_DELAY_TIMER + 1 }
-:calc  PTR_USERFLAGS         { PTR_SOUND_TIMER + 1 }
+:const PC 0
+:calc  SP                { PC + 2 }
+:calc  REGISTERS         { SP + 1 }
+:calc  INDEX             { REGISTERS + 16 }
+:calc  STACK             { INDEX + 2 }
+:calc  DELAY_TIMER       { STACK + 24 }
+:calc  SOUND_TIMER       { DELAY_TIMER + 1 }
+:calc  USERFLAGS         { SOUND_TIMER + 1 }
 
-:calc  PTR_RUNNING           { PTR_USERFLAGS + 16 }
-:calc  PTR_DISPLAY_MODE      { PTR_RUNNING + 1 }
-:calc  PTR_QUIRKS            { PTR_DISPLAY_MODE + 1 }
-:calc  PTR_CYCLES_PER_FRAME  { PTR_QUIRKS + 1 }
-:calc  PTR_CYCLE             { PTR_CYCLES_PER_FRAME + 1 }
-:calc  PTR_WINDOW_POSITION   { PTR_CYCLE + 1 }
-:calc  PTR_WINDOW_POSITION_X { PTR_WINDOW_POSITION + 0 }
-:calc  PTR_WINDOW_POSITION_Y { PTR_WINDOW_POSITION + 1 }
+:calc  RUNNING           { USERFLAGS + 16 }
+:calc  DISPLAY_MODE      { RUNNING + 1 }
+:calc  QUIRKS            { DISPLAY_MODE + 1 }
+:calc  CYCLES_PER_FRAME  { QUIRKS + 1 }
+:calc  CYCLE             { CYCLES_PER_FRAME + 1 }
+:calc  WINDOW_POSITION   { CYCLE + 1 }
+:calc  WINDOW_POSITION_X { WINDOW_POSITION + 0 }
+:calc  WINDOW_POSITION_Y { WINDOW_POSITION + 1 }
 
-:calc  PTR_RAM               { PTR_WINDOW_POSITION + 2 }
-:calc  MACHINE_SIZE          { PTR_RAM + 4096 }
+:calc  RAM               { WINDOW_POSITION + 2 }
+:calc  MACHINE_SIZE          { RAM + 4096 }
 
 :alias current-machine vC
 :const NUM_MACHINES 4
@@ -35,8 +35,8 @@
     current-machine := MACHINE
     select-machine
     reset
-    set8 PTR_WINDOW_POSITION_X XPOS
-    set8 PTR_WINDOW_POSITION_Y YPOS
+    set8 WINDOW_POSITION_X XPOS
+    set8 WINDOW_POSITION_Y YPOS
     :alias unpack-hi v1
     :alias unpack-lo v2
     :unpack long chip-8-font
@@ -104,13 +104,13 @@
 :calc SUPERCHIP { SHIFT_QUIRK + JUMP_QUIRK + CLIP_QUIRK }
 
 :macro get-quirk REG QUIRK {
-    point-to PTR_QUIRKS
+    point-to QUIRKS
     load REG - REG
     vF := QUIRK
     REG &= vF
 }
 :macro set-quirk QUIRK {
-    point-to PTR_QUIRKS
+    point-to QUIRKS
     load v0 - v0
     vF := QUIRK
     v0 |= vF
@@ -118,14 +118,14 @@
 }
 :macro reset-quirk QUIRK {
     :calc INVERTED { ~ QUIRK }
-    point-to PTR_QUIRKS
+    point-to QUIRKS
     load v0 - v0
     vF := INVERTED
     v0 &= vF
     save v0 - v0
 }
 :macro set-quirks QUIRKS {
-    point-to PTR_QUIRKS
+    point-to QUIRKS
     vF := QUIRKS
     save vF - vF
 }

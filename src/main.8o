@@ -48,16 +48,16 @@
         current-machine := 0
         loop
             select-machine
-            point-to PTR_RUNNING
+            point-to RUNNING
             load v0
             if v0 != STATE_STOPPED begin
-                point-to PTR_CYCLES_PER_FRAME
+                point-to CYCLES_PER_FRAME
                 load v0
-                point-to PTR_CYCLE
+                point-to CYCLE
                 save v0
                 loop
                     run-cycle
-                    point-to PTR_CYCLE
+                    point-to CYCLE
                     load v0 - v0
                     v0 -= 1
                     save v0
@@ -87,11 +87,11 @@
         loop
             select-machine
             # Decrement timers and play sound
-            point-to PTR_DELAY_TIMER
+            point-to DELAY_TIMER
             load v0 - v0
             if v0 != 0 then v0 -= 1
             save v0
-            point-to PTR_SOUND_TIMER
+            point-to SOUND_TIMER
             load v0 - v0
             if v0 != 0 begin
                 v0 -= 1
@@ -100,7 +100,7 @@
             save v0
 
             # Check if we're waiting for dispQuirk
-            point-to PTR_RUNNING
+            point-to RUNNING
             load v0 - v0
             if v0 == STATE_WAITING_FOR_INTERRUPT then
                 v0 := STATE_INTERRUPT_TRIGGERED
@@ -114,11 +114,11 @@
 
 # Lazily reset the interpreter
 : reset
-    set16 PTR_PC               0x200
-    set8  PTR_SP               0
-    set8  PTR_DISPLAY_MODE     DISPLAY_LORES
-    set8  PTR_RUNNING          STATE_RUNNING
-    set8  PTR_CYCLES_PER_FRAME 30
+    set16 PC               0x200
+    set8  SP               0
+    set8  DISPLAY_MODE     DISPLAY_LORES
+    set8  RUNNING          STATE_RUNNING
+    set8  CYCLES_PER_FRAME 30
     return
 
 # (v1, v2) point to program data, copy it into RAM at 0x200
@@ -134,7 +134,7 @@
         load-program-add
         # i == byte within program
         load v0
-        point-to PTR_RAM
+        point-to RAM
         v3 += 2
         load-program-add
         v3 -= 2
@@ -167,7 +167,7 @@
         0x00 0x00
         i += v3
         load v0
-        point-to PTR_RAM
+        point-to RAM
         i += v3
         save v0
         v3 += 1

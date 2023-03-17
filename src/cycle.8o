@@ -1,6 +1,6 @@
 : run-cycle
     # Load and increase PC
-    point-to PTR_PC
+    point-to PC
     load v0 - v1
     v2 := v0
     v3 := v1
@@ -10,7 +10,7 @@
     save v0 - v1
 
     # Load opcode from memory
-    point-to PTR_RAM
+    point-to RAM
     add-to-i v2 v3
     load v1
 
@@ -27,7 +27,7 @@
     # Jump to NNN
     if v2 == 0x10 begin
         v0 := v3
-        point-to PTR_PC
+        point-to PC
         save v1
         return
     end
@@ -35,17 +35,17 @@
     # Subroutine call to NNN
     if v2 == 0x20 begin
         # Load and increase stack pointer
-        point-to PTR_SP
+        point-to SP
         load v0 - v0
         v2 := v0
         v0 += 2
         save v0
         # Load old PC and write call destination
-        point-to PTR_PC
+        point-to PC
         load v4 - v5
         v0 := v3
         save v1
-        point-to PTR_STACK
+        point-to STACK
         i += v2
         save v4 - v5
         return
@@ -53,7 +53,7 @@
 
     # Skip next opcode if register X == NN
     if v2 == 0x30 begin
-        point-to PTR_REGISTERS
+        point-to REGISTERS
         i += v3
         load v0
         if v0 == v1 then jump skip-next-opcode
@@ -62,7 +62,7 @@
 
     # Skip next opcode if register X != NN
     if v2 == 0x40 begin
-        point-to PTR_REGISTERS
+        point-to REGISTERS
         i += v3
         load v0
         if v0 != v1 then jump skip-next-opcode
@@ -71,10 +71,10 @@
 
     # Skip next opcode if registers are equal
     if v2 == 0x50 begin
-        point-to PTR_REGISTERS
+        point-to REGISTERS
         i += v3
         load v0
-        point-to PTR_REGISTERS
+        point-to REGISTERS
         v1 >>= v1  v1 >>= v1
         v1 >>= v1  v1 >>= v1
         i += v1
@@ -85,7 +85,7 @@
 
     # Set register X to NN
     if v2 == 0x60 begin
-        point-to PTR_REGISTERS
+        point-to REGISTERS
         i += v3
         save v1 - v1
         return
@@ -93,7 +93,7 @@
 
     # Add NN to register X
     if v2 == 0x70 begin
-        point-to PTR_REGISTERS
+        point-to REGISTERS
         i += v3
         load v0 - v0
         v0 += v1
@@ -105,10 +105,10 @@
 
     # Skip next opcode if registers are not equal
     if v2 == 0x90 begin
-        point-to PTR_REGISTERS
+        point-to REGISTERS
         i += v3
         load v0
-        point-to PTR_REGISTERS
+        point-to REGISTERS
         v1 >>= v1  v1 >>= v1
         v1 >>= v1  v1 >>= v1
         i += v1
@@ -120,7 +120,7 @@
     # Set i to NNN
     if v2 == 0xA0 begin
         v0 := v3
-        point-to PTR_INDEX
+        point-to INDEX
         save v1
         return
     end
@@ -128,20 +128,20 @@
     # Jump to NNN + v0
     if v2 == 0xB0 begin
         get-quirk v0 JUMP_QUIRK
-        point-to PTR_REGISTERS
+        point-to REGISTERS
         if v0 != 0 then i += v3
         load v2 - v2
         v0 := v3
         v1 += v2
         v0 += vF
-        point-to PTR_PC
+        point-to PC
         save v1
         return
     end
     
     # Get random number, masked by NN into register X
     if v2 == 0xC0 begin
-        point-to PTR_REGISTERS
+        point-to REGISTERS
         i += v3
         v0 := random 0xFF
         v0 &= v1
@@ -153,7 +153,7 @@
 
     # Skip next opcode if key is pressed / not pressed
     if v2 == 0xE0 begin
-        point-to PTR_REGISTERS
+        point-to REGISTERS
         i += v3
         load v0
         if v1 == 0x9E begin
@@ -176,7 +176,7 @@
     loop again
 
 : skip-next-opcode
-    point-to PTR_PC
+    point-to PC
     load v0 - v1
     vF := 2
     v1 += vF
@@ -185,7 +185,7 @@
     return
 
 : step-back-one-opcode
-    point-to PTR_PC
+    point-to PC
     load v0 - v1
     vF := 2
     v1 -= vF
@@ -223,15 +223,15 @@
     # Return from subroutine
     if v1 == 0xEE begin
         # Load and decrease stack pointer
-        point-to PTR_SP
+        point-to SP
         load v0 - v0
         v0 -= 2
         save v0
         # Restore PC
-        point-to PTR_STACK
+        point-to STACK
         i += v0
         load v1
-        point-to PTR_PC
+        point-to PC
         save v1
         return
     end
@@ -250,7 +250,7 @@
 
     # Exit the interpreter, back to the menu
     if v1 == 0xFD begin
-        point-to PTR_RUNNING
+        point-to RUNNING
         v0 := STATE_STOPPED
         save v0
         jump step-back-one-opcode
@@ -258,7 +258,7 @@
 
     # Set the display mode to lores
     if v1 == 0xFE begin
-        point-to PTR_DISPLAY_MODE
+        point-to DISPLAY_MODE
         v0 := DISPLAY_LORES
         save v0
         lores
@@ -267,7 +267,7 @@
 
     # Set the display mode to hires
     if v1 == 0xFF begin
-        point-to PTR_DISPLAY_MODE
+        point-to DISPLAY_MODE
         v0 := DISPLAY_HIRES
         save v0
         hires
@@ -288,12 +288,12 @@
     v1 >>= v1
 
     # Pre-load register Y
-    point-to PTR_REGISTERS
+    point-to REGISTERS
     i += v1
     load v4 - v4
 
     # Pre-load register X
-    point-to PTR_REGISTERS
+    point-to REGISTERS
     i += v3
     load v0 - v0
 
@@ -359,7 +359,7 @@
         if v1 != 0 then v4 := v0
         v4 >>= v4
         v0 := vF
-        point-to PTR_REGISTERS
+        point-to REGISTERS
         i += v3
         save v4 - v4
         vF := v0
@@ -379,7 +379,7 @@
         if v1 != 0 then v4 := v0
         v4 <<= v4
         v0 := vF
-        point-to PTR_REGISTERS
+        point-to REGISTERS
         i += v3
         save v4 - v4
         vF := v0
@@ -392,7 +392,7 @@
 
 : save-flag
     v0 := vF
-    :calc VF_REGISTER { PTR_REGISTERS + 0xF }
+    :calc VF_REGISTER { REGISTERS + 0xF }
     point-to VF_REGISTER
     save v0
     return
@@ -400,7 +400,7 @@
 : draw-sprite
     get-quirk v0 DISP_QUIRK
     if v0 != 0 begin
-        point-to PTR_RUNNING
+        point-to RUNNING
         load v0 - v0
         if v0 == STATE_WAITING_FOR_INTERRUPT then
             jump step-back-one-opcode
@@ -416,7 +416,7 @@
     end
 
     # Load value from first register
-    point-to PTR_REGISTERS
+    point-to REGISTERS
     i += v3
     load v0
 
@@ -426,10 +426,10 @@
     v1 >>= v1
     v1 >>= v1
     v1 >>= v1
-    point-to PTR_REGISTERS
+    point-to REGISTERS
     i += v1
     load v1 - v1
-    point-to PTR_DISPLAY_MODE
+    point-to DISPLAY_MODE
     load v3 - v3
     if v3 == DISPLAY_LORES then v4 := 31
     if v3 == DISPLAY_HIRES then v4 := 63
@@ -459,10 +459,10 @@
     # Set i register
     i := current-machine-ptr
     load v4 - v5
-    vF := PTR_RAM
+    vF := RAM
     v5 += vF
     v4 += vF
-    point-to PTR_INDEX
+    point-to INDEX
     load v2 - v3
     v5 += v3
     v4 += vF
@@ -471,7 +471,7 @@
     if v2 != 0 begin
         # if v0 > (width - spriteWidth):
         #     spriteWidth = width - v0
-        point-to PTR_DISPLAY_MODE
+        point-to DISPLAY_MODE
         load v2 - v2
         if v2 == DISPLAY_LORES then v3 := 63
         if v2 == DISPLAY_HIRES then v3 := 127
@@ -516,7 +516,7 @@
     i := draw-sprite-smc2
     save v4 - v5
 
-    point-to PTR_WINDOW_POSITION
+    point-to WINDOW_POSITION
     load v2 - v3
     v0 += v2
     v1 += v3
@@ -541,14 +541,14 @@
 
 : range-F0
     # Pre-load i to point to register X
-    point-to PTR_REGISTERS
+    point-to REGISTERS
     i += v3
 
     # Load delay timer into register X
     if v1 == 0x07 begin
-        point-to PTR_DELAY_TIMER
+        point-to DELAY_TIMER
         load v0
-        point-to PTR_REGISTERS
+        point-to REGISTERS
         i += v3
         save v0
         return
@@ -571,7 +571,7 @@
     # Write register X into delay timer
     if v1 == 0x15 begin
         load v0
-        point-to PTR_DELAY_TIMER
+        point-to DELAY_TIMER
         save v0
         return
     end
@@ -579,7 +579,7 @@
     # Write register X to sound timer
     if v1 == 0x18 begin
         load v0
-        point-to PTR_SOUND_TIMER
+        point-to SOUND_TIMER
         save v0
         return
     end
@@ -587,7 +587,7 @@
     # Add register X to i
     if v1 == 0x1E begin
         load v2 - v2
-        point-to PTR_INDEX
+        point-to INDEX
         load v0 - v1
         v1 += v2
         v0 += vF
@@ -603,7 +603,7 @@
         v1 <<= v1
         v1 += v0
         v0 := 0
-        point-to PTR_INDEX
+        point-to INDEX
         save v1
         return
     end
@@ -619,7 +619,7 @@
         v1 += v0
         v1 += 80
         v0 := 0
-        point-to PTR_INDEX
+        point-to INDEX
         save v1
         return
     end
@@ -627,9 +627,9 @@
     # BCD encode register X to i
     if v1 == 0x33 begin
         load v2 - v2
-        point-to PTR_INDEX
+        point-to INDEX
         load v1
-        point-to PTR_RAM
+        point-to RAM
         add-to-i v0 v1
         bcd v2
         return
@@ -639,12 +639,12 @@
     if v1 == 0x55 begin
         v2 := 0
         loop
-            point-to PTR_REGISTERS
+            point-to REGISTERS
             i += v2
             load v4 - v4
-            point-to PTR_INDEX
+            point-to INDEX
             load v1
-            point-to PTR_RAM
+            point-to RAM
             add-to-i v0 v1
             i += v2
             save v4 - v4
@@ -653,7 +653,7 @@
         again
         get-quirk v0 MEM_QUIRK
         if v0 != 0 begin
-            point-to PTR_INDEX
+            point-to INDEX
             load v0 - v1
             v3 += 1
             v1 += v3
@@ -667,13 +667,13 @@
     if v1 == 0x65 begin
         v2 := 0
         loop
-            point-to PTR_INDEX
+            point-to INDEX
             load v1
-            point-to PTR_RAM
+            point-to RAM
             add-to-i v0 v1
             i += v2
             load v1 - v1
-            point-to PTR_REGISTERS
+            point-to REGISTERS
             i += v2
             save v1 - v1
             v2 += 1
@@ -681,7 +681,7 @@
         again
         get-quirk v0 MEM_QUIRK
         if v0 != 0 begin
-            point-to PTR_INDEX
+            point-to INDEX
             load v0 - v1
             v3 += 1
             v1 += v3
@@ -695,10 +695,10 @@
     if v1 == 0x75 begin
         v2 := 0
         loop
-            point-to PTR_REGISTERS
+            point-to REGISTERS
             i += v2
             load v4 - v4
-            point-to PTR_USERFLAGS
+            point-to USERFLAGS
             i += v2
             save v4 - v4
             v2 += 1
@@ -711,10 +711,10 @@
     if v1 == 0x85 begin
         v2 := 0
         loop
-            point-to PTR_USERFLAGS
+            point-to USERFLAGS
             i += v2
             load v1 - v1
-            point-to PTR_REGISTERS
+            point-to REGISTERS
             i += v2
             save v1 - v1
             v2 += 1
