@@ -1,37 +1,71 @@
 :include "macros.8o"
 
 : main
+
+    # Initialize machines table (should be dynamic at some point)
+    :alias unpack-hi v0
+    :alias unpack-lo v1
+    :unpack long free-memory
+    i := long machines
+    save v1
+    make16 v2 v3 MACHINE_SIZE
+    v1 += v3
+    v0 += vF
+    v0 += v2
+    save v1
+    v1 += v3
+    v0 += vF
+    v0 += v2
+    save v1
+    v1 += v3
+    v0 += vF
+    v0 += v2
+    save v1
+
+    # Make sure we are running in hires ourselves and we sound friendly
     hires
+    clear
+    i := beep-pattern
+    audio
+    v0 := 70
+    pitch := v0
+
     loop
-        reset
-        :alias unpack-hi v1
-        :alias unpack-lo v2
-        :unpack long chip-8-font
-        load-font
-        :unpack long rom-test-suite
-        load-program
-        set-quirks CHIP8
-        run-interpreter
+        init 0  0  0 SUPERCHIP rom-pong
+        init 1 64  0 SUPERCHIP rom-space-invaders
+        init 2  0 32 CHIP8     rom-christmas
+        init 3 64 32 CHIP8     rom-sierpinski
+        run-interpreters
     again
 
 # Run until program exits or magic key combo is pressed
-: run-interpreter
+: run-interpreters
     loop
         v0 := 1
         delay := v0
 
-        # Run the CPU for the requested number of cycles
-        point-to PTR_CYCLES_PER_FRAME
-        load v0
-        point-to PTR_CYCLE
-        save v0
+        # Run each CPU for the requested number of cycles
+        current-machine := 0
         loop
-            run-cycle
-            point-to PTR_CYCLE
-            load v0 - v0
-            v0 -= 1
-            save v0
-            if v0 != 0 then
+            select-machine
+            point-to PTR_RUNNING
+            load v0
+            if v0 != STATE_STOPPED begin
+                point-to PTR_CYCLES_PER_FRAME
+                load v0
+                point-to PTR_CYCLE
+                save v0
+                loop
+                    run-cycle
+                    point-to PTR_CYCLE
+                    load v0 - v0
+                    v0 -= 1
+                    save v0
+                    if v0 != 0 then
+                again
+            end
+            current-machine += 1
+            if current-machine != NUM_MACHINES then
         again
 
         # Wait to sync up with reality
@@ -40,21 +74,6 @@
             if v0 != 0 then
         again
 
-        # Decrement timers and play sound
-        point-to PTR_DELAY_TIMER
-        load v0 - v0
-        if v0 != 0 then v0 -= 1
-        save v0
-        point-to PTR_SOUND_TIMER
-        load v0 - v0
-        v1 := 0
-        if v0 != 0 begin
-            v0 -= 1
-            v1 := 1
-        end
-        save v0
-        buzzer := v1
-
         # Check for magic key combo
         v0 := 0
         if v0 key begin
@@ -62,30 +81,44 @@
             if v0 key then return
         end
 
-        # Check for SCHIP exit opcode
-        point-to PTR_RUNNING
-        load v0 - v0
-        if v0 == STATE_WAITING_FOR_INTERRUPT then
-            v0 := STATE_INTERRUPT_TRIGGERED
-        save v0
-        if v0 != STATE_STOPPED then
+        # Run all the timer stuff for each CPU
+        current-machine := 0
+        loop
+            select-machine
+            # Decrement timers and play sound
+            point-to PTR_DELAY_TIMER
+            load v0 - v0
+            if v0 != 0 then v0 -= 1
+            save v0
+            point-to PTR_SOUND_TIMER
+            load v0 - v0
+            v1 := 0
+            if v0 != 0 begin
+                v0 -= 1
+                v1 := 1
+            end
+            save v0
+            buzzer := v1
+
+            # Check if we're waiting for dispQuirk
+            point-to PTR_RUNNING
+            load v0 - v0
+            if v0 == STATE_WAITING_FOR_INTERRUPT then
+                v0 := STATE_INTERRUPT_TRIGGERED
+            save v0
+
+            current-machine += 1
+            if current-machine != NUM_MACHINES then
+        again
     again
-    return
 
-# Lazily reset the interpreter. Also sets a nice tone for the beep.
+# Lazily reset the interpreter
 : reset
-    clear
-
     set16 PTR_PC               0x200
     set8  PTR_SP               0
     set8  PTR_DISPLAY_MODE     DISPLAY_LORES
     set8  PTR_RUNNING          STATE_RUNNING
     set8  PTR_CYCLES_PER_FRAME 30
-
-    i := beep-pattern
-    audio
-    v0 := 70
-    pitch := v0
     return
 
 # (v1, v2) point to program data, copy it into RAM at 0x200
@@ -129,7 +162,7 @@
     loop
         i := load-font-smc
         save v1 - v2
-        0xF0 0x00
+        0xF0 0x00   # i := long ...
         : load-font-smc
         0x00 0x00
         i += v3
@@ -143,11 +176,40 @@
     return
 
 : pointer-to
-    i := long free-memory
+    i := long current-machine-ptr
+    load vA - vB
+    i := load-pointer-smc
+    save vA - vB
+    0xF0 0x00   # i := long ...
+    : load-pointer-smc
+    0x00 0x00
     i += vF
     return
 
+: select-machine
+    i := machines
+    i += current-machine
+    i += current-machine
+    load v1
+    i := current-machine-ptr
+    save v1
+    return
+
 :segment data
+
+: machines
+    0 0
+    0 0
+    0 0
+    0 0
+
+:monitor machines "0x%2x 0x%2x"
+
+: current-machine-ptr
+    :pointer free-memory
+
+:monitor current-machine-ptr "0x%2x"
+:monitor current-machine 1
 
 : beep-pattern
     0xFF 0x00 0xFF 0x00 0xFF 0x00 0xFF 0x00 0xFF 0x00 0xFF 0x00 0xFF 0x00 0xFF 0x00

@@ -457,9 +457,8 @@
     save v2 - v2
 
     # Set i register
-    :alias unpack-hi v4
-    :alias unpack-lo v5
-    :unpack long free-memory
+    i := current-machine-ptr
+    load v4 - v5
     vF := PTR_RAM
     v5 += vF
     v4 += vF

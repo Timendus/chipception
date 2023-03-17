@@ -1,27 +1,49 @@
 # The machine definition offsets
 
 :const PTR_PC 0
-:calc  PTR_SP               { PTR_PC + 2 }
-:calc  PTR_REGISTERS        { PTR_SP + 1 }
-:calc  PTR_INDEX            { PTR_REGISTERS + 16 }
-:calc  PTR_STACK            { PTR_INDEX + 2 }
-:calc  PTR_DELAY_TIMER      { PTR_STACK + 24 }
-:calc  PTR_SOUND_TIMER      { PTR_DELAY_TIMER + 1 }
-:calc  PTR_USERFLAGS        { PTR_SOUND_TIMER + 1 }
+:calc  PTR_SP                { PTR_PC + 2 }
+:calc  PTR_REGISTERS         { PTR_SP + 1 }
+:calc  PTR_INDEX             { PTR_REGISTERS + 16 }
+:calc  PTR_STACK             { PTR_INDEX + 2 }
+:calc  PTR_DELAY_TIMER       { PTR_STACK + 24 }
+:calc  PTR_SOUND_TIMER       { PTR_DELAY_TIMER + 1 }
+:calc  PTR_USERFLAGS         { PTR_SOUND_TIMER + 1 }
 
-:calc  PTR_RUNNING          { PTR_USERFLAGS + 16 }
-:calc  PTR_DISPLAY_MODE     { PTR_RUNNING + 1 }
-:calc  PTR_QUIRKS           { PTR_DISPLAY_MODE + 1 }
-:calc  PTR_CYCLES_PER_FRAME { PTR_QUIRKS + 1 }
-:calc  PTR_CYCLE            { PTR_CYCLES_PER_FRAME + 1 }
-:calc  PTR_WINDOW_POSITION  { PTR_CYCLE + 1 }
+:calc  PTR_RUNNING           { PTR_USERFLAGS + 16 }
+:calc  PTR_DISPLAY_MODE      { PTR_RUNNING + 1 }
+:calc  PTR_QUIRKS            { PTR_DISPLAY_MODE + 1 }
+:calc  PTR_CYCLES_PER_FRAME  { PTR_QUIRKS + 1 }
+:calc  PTR_CYCLE             { PTR_CYCLES_PER_FRAME + 1 }
+:calc  PTR_WINDOW_POSITION   { PTR_CYCLE + 1 }
+:calc  PTR_WINDOW_POSITION_X { PTR_WINDOW_POSITION + 0 }
+:calc  PTR_WINDOW_POSITION_Y { PTR_WINDOW_POSITION + 1 }
 
-:calc  PTR_RAM              { PTR_WINDOW_POSITION + 2 }
-:calc  MACHINE_SIZE         { PTR_RAM + 4096 }
+:calc  PTR_RAM               { PTR_WINDOW_POSITION + 2 }
+:calc  MACHINE_SIZE          { PTR_RAM + 4096 }
+
+:alias current-machine vC
+:const NUM_MACHINES 4
 
 :macro point-to PTR {
     vF := PTR
     pointer-to
+}
+
+# Initializing interpreters
+
+:macro init MACHINE XPOS YPOS QUIRKS ROM {
+    current-machine := MACHINE
+    select-machine
+    reset
+    set8 PTR_WINDOW_POSITION_X XPOS
+    set8 PTR_WINDOW_POSITION_Y YPOS
+    :alias unpack-hi v1
+    :alias unpack-lo v2
+    :unpack long chip-8-font
+    load-font
+    :unpack long ROM
+    load-program
+    set-quirks QUIRKS
 }
 
 # Helpers for setting values in memory
