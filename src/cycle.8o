@@ -451,6 +451,7 @@
         end
         v6 := v2 # Save height for later
     end
+    vC := v2
     vF := 0x10
     v2 |= vF
     i := draw-sprite-smc1
@@ -516,10 +517,19 @@
     i := draw-sprite-smc2
     save v4 - v5
 
-    point-to WINDOW_POSITION
-    load v2 - v3
-    v0 += v2
-    v1 += v3
+    # Super crappy moving registers around here... TODO: fix ;)
+    v2 := v0
+    v3 := v1
+    vF := DISPLAY_BUFFER
+    unpack-pointer
+    vA := v0
+    vB := v1
+    v0 := v4
+    v1 := v5
+    v4 := 1     # TODO: 16x16 sprites
+    v5 := vC
+    blit-sprite
+    return
 
     # Actually do the thing
     0xF0 0x00       # i := long ...

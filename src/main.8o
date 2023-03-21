@@ -68,20 +68,8 @@
             if current-machine != NUM_MACHINES then
         again
 
-        # Wait to sync up with reality
-        loop
-            v0 := delay
-            if v0 != 0 then
-        again
-
-        # Check for magic key combo
-        v0 := 0
-        if v0 key begin
-            v0 := 0xA
-            if v0 key then return
-        end
-
-        # Run all the timer stuff for each CPU
+        # Run all the timer stuff for each CPU and render to screen
+        display-clear
         current-machine := 0
         vD := 0
         loop
@@ -106,10 +94,33 @@
                 v0 := STATE_INTERRUPT_TRIGGERED
             save v0
 
+            # Render this CPUs display
+            point-to WINDOW_POSITION
+            load v2 - v3
+            vF := DISPLAY_BUFFER
+            unpack-pointer
+            v4 := 8             # TODO: hires
+            v5 := 32
+            blit-to-display
+
             current-machine += 1
             if current-machine != NUM_MACHINES then
         again
         buzzer := vD
+        display-copy
+
+        # Wait to sync up with reality
+        loop
+            v0 := delay
+            if v0 != 0 then
+        again
+
+        # Check for magic key combo
+        v0 := 0
+        if v0 key begin
+            v0 := 0xA
+            if v0 key then return
+        end
     again
 
 # Lazily reset the interpreter
@@ -186,6 +197,13 @@
     i += vF
     return
 
+: unpack-pointer
+    i := long current-machine-ptr
+    load v0 - v1
+    v1 += vF
+    v0 += vF
+    return
+
 : select-machine
     i := machines
     i += current-machine
@@ -215,6 +233,7 @@
     0xFF 0x00 0xFF 0x00 0xFF 0x00 0xFF 0x00 0xFF 0x00 0xFF 0x00 0xFF 0x00 0xFF 0x00
 
 :include "cycle.8o"
+:include "display.8o"
 :include "fonts.8o"
 :include "roms.8o"
 

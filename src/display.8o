@@ -41,23 +41,52 @@
     0 0 0 0 0 0 0 0
 : display-clear
     i := display-clear-values
-    load vF
+    load vD
     i := display-buffer
-    display-clear-256
-    display-clear-256
-    display-clear-256
-    display-clear-256
-    display-clear-256
-    display-clear-256
-    display-clear-256
-    jump display-clear-256
+    display-clear-224
+    display-clear-224
+    display-clear-224
+    display-clear-224
+    display-clear-224
+    display-clear-224
+    display-clear-224
+    display-clear-224
+    display-clear-224
+    save v7 save v7
+    save v7 save v7
+    return
 
-: display-clear-256
-    # Writing 16 x 16 = 256 bytes
-    save vF  save vF  save vF  save vF
-    save vF  save vF  save vF  save vF
-    save vF  save vF  save vF  save vF
-    save vF  save vF  save vF  save vF
+: display-clear-224
+    # Writing 16 x 14 = 224 bytes
+    save vD  save vD  save vD  save vD
+    save vD  save vD  save vD  save vD
+    save vD  save vD  save vD  save vD
+    save vD  save vD  save vD  save vD
+    return
+
+# Overwrite the display buffer contents with this image
+# Inputs:
+#   * v0, v1 = pointer to image
+: display-overwrite
+    i := overwrite-smc
+    save v1
+    make16 v8 v9 0
+    loop
+        0xF0 0x00 # i := long ....
+        : overwrite-smc
+        0 0
+        vA := v8
+        add-to-i vA v9
+        load v7
+        i := display-buffer
+        vA := v8
+        add-to-i vA v9
+        save v7
+        vF := 8
+        v9 += vF
+        v8 += vF
+        if v8 != 0x08 then
+    again
     return
 
 # Blit a buffer to the display buffer

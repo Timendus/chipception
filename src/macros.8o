@@ -19,9 +19,10 @@
 :calc  WINDOW_POSITION_Y { WINDOW_POSITION + 1 }
 
 :calc  RAM               { WINDOW_POSITION + 2 }
-:calc  MACHINE_SIZE          { RAM + 4096 }
+:calc  DISPLAY_BUFFER    { RAM + 180 }
+:calc  MACHINE_SIZE      { RAM + 4096 }
 
-:alias current-machine vC
+:alias current-machine vE
 :const NUM_MACHINES 4
 
 :macro point-to PTR {
