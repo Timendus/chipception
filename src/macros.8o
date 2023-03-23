@@ -91,6 +91,10 @@
 :const DISPLAY_LORES 0
 :const DISPLAY_HIRES 1
 
+:const MODE_FULLSCREEN 0
+:const MODE_TILED 1
+:const MODE_WINDOWED 2
+
 # Constants and macros for quirks
 
 :const VF_QUIRK    0b10000000
@@ -130,3 +134,8 @@
     vF := CHOSEN-QUIRKS
     save vF - vF
 }
+
+:segment data
+
+: window-mode
+    :byte MODE_WINDOWED

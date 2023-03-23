@@ -216,7 +216,20 @@
 
     # Clear screen
     if v1 == 0xE0 begin
-        clear
+        i := window-mode
+        load v0
+        if v0 == MODE_FULLSCREEN begin
+            clear
+        else
+            point-to DISPLAY_BUFFER
+            v0 := 0
+            v1 := 0
+            loop
+                save v0
+                v1 += 1
+                if v1 != 0 then
+            again
+        end
         return
     end
 
@@ -517,26 +530,29 @@
     i := draw-sprite-smc2
     save v4 - v5
 
-    # Super crappy moving registers around here... TODO: fix ;)
-    v2 := v0
-    v3 := v1
-    vF := DISPLAY_BUFFER
-    unpack-pointer
-    vA := v0
-    vB := v1
-    v0 := v4
-    v1 := v5
-    v4 := 1     # TODO: 16x16 sprites
-    v5 := vC
-    blit-sprite
-    return
-
-    # Actually do the thing
-    0xF0 0x00       # i := long ...
-    : draw-sprite-smc2
-    0x00 0x00       # sprite address
-    :next draw-sprite-smc1
-    sprite v0 v1 8  # 8 overwritten by actual height
+    i := window-mode
+    load vF - vF
+    if vF != MODE_FULLSCREEN begin
+        # Super crappy moving registers around here... TODO: fix ;)
+        v2 := v0
+        v3 := v1
+        vF := DISPLAY_BUFFER
+        unpack-pointer
+        vA := v0
+        vB := v1
+        v0 := v4
+        v1 := v5
+        v4 := 1     # TODO: 16x16 sprites
+        v5 := vC
+        blit-sprite
+    else
+        # Actually do the thing
+        0xF0 0x00       # i := long ...
+        : draw-sprite-smc2
+        0x00 0x00       # sprite address
+        :next draw-sprite-smc1
+        sprite v0 v1 8  # 8 overwritten by actual height
+    end
     jump save-flag
 
 :segment data

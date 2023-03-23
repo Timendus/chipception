@@ -206,6 +206,7 @@
 :alias offset v1
 :alias row v8
 :alias column v9
+:alias flipped vA
 :const target-buffer-height 32
 
 : blit-sprite
@@ -215,6 +216,7 @@
     save vA - vB
 
     column := 0
+    flipped := 0
     loop
         row := 0
         loop
@@ -266,12 +268,18 @@
 
             # i now points to the right byte, so write it!
             load v0 - v0
+            v1 := v0
+            v1 &= leftPart
+            if v1 != 0 then flipped := 1
             v0 ^= leftPart
             save v0 - v0
             if X < 56 begin
                 vF := target-buffer-height
                 i += vF
                 load v0 - v0
+                v1 := v0
+                v1 &= rightPart
+                if v1 != 0 then flipped := 1
                 v0 ^= rightPart
                 save v0 - v0
             end
@@ -282,6 +290,7 @@
         column += 1
         if column != width then
     again
+    vF := flipped
     return
 
 
