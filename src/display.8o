@@ -91,7 +91,7 @@
 
 # Blit a buffer to the display buffer
 # Inputs:
-#   * v0, v1 = pointer to source buffer
+#   * vA, vB = pointer to source buffer
 #   * v2 = X coordinate in pixels
 #   * v3 = Y coordinate in pixels
 #   * v4 = source width in bytes
@@ -111,7 +111,7 @@
 
 : blit-to-display
     i := blit-buffer-smc
-    save v1
+    save vA - vB
 
     column := 0
     loop
@@ -195,25 +195,33 @@
 #   * vA, vB = pointer to buffer
 #   * v2 = X coordinate in pixels
 #   * v3 = Y coordinate in pixels
-#   * v4 = source width in bytes
-#   * v5 = source height in pixels
+#   * v6 = source height in pixels
+#   * v7 = source width in bytes
 :alias X v2
 :alias Y v3
-:alias width v4
-:alias height v5
-:alias leftPart v6
-:alias rightPart v7
+:alias width v7
+:alias height v6
+:alias leftPart v5
+:alias rightPart v4
 :alias offset v1
 :alias row v8
 :alias column v9
 :alias flipped vA
-:const target-buffer-height 32
+
+# TODO: hires
+:const target-buffer-width 64 # pixels
+:calc  target-buffer-width-mask { target-buffer-width - 1 }
+:const target-buffer-height 32 # pixels
+:calc  target-buffer-height-mask { target-buffer-height - 1 }
 
 : blit-sprite
     i := blit-sprite-smc1
-    save v1
+    save v0 - v1
     i := blit-sprite-smc2
     save vA - vB
+
+    vF := target-buffer-width-mask
+    X &= vF
 
     column := 0
     flipped := 0
@@ -263,8 +271,11 @@
                 v0 -= 1
             again
             # Get right row
-            i += Y
-            i += row
+            v0 := Y
+            v0 += row
+            vF := target-buffer-height-mask
+            v0 &= vF
+            i += v0
 
             # i now points to the right byte, so write it!
             load v0 - v0

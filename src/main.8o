@@ -199,9 +199,9 @@
 
 : unpack-pointer
     i := long current-machine-ptr
-    load v0 - v1
-    v1 += vF
-    v0 += vF
+    load vA - vB
+    vB += vF
+    vA += vF
     return
 
 : select-machine

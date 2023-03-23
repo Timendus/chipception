@@ -452,19 +452,23 @@
     # Set draw height
     vF := 0x0F
     v2 &= vF
+    v7 := 1
+    if v2 == 0 begin
+        v2 := 16
+        v7 := 2
+    end
     get-quirk v3 CLIP_QUIRK
     if v3 != 0 begin
         # if v1 > (height - v2):
-        #     v2 = height - v1 
+        #     v2 = height - v1
         v3 := v4
         v3 -= v2
         if v1 > v3 begin
             v2 := v4
             v2 -= v1
         end
-        v6 := v2 # Save height for later
     end
-    vC := v2
+    v6 := v2 # Save height for later
     vF := 0x10
     v2 |= vF
     i := draw-sprite-smc1
@@ -492,16 +496,21 @@
         v0 &= v3 # Mask X coordinate
         v3 += 1
         v2 := v3
-        v2 -= 8  # TODO: 16 pixels wide sprites
+        v2 -= 8
+        if v6 == 16 then v2 -= 8
         if v0 > v2 begin
             v2 := v3
             v2 -= v0
-            # v2 is width, now make a mask
+            # v2 is new width, now make a mask
             vF := 8
+            if v6 == 16 then vF := 16
             v2 =- vF
             v3 := 0xFF
+            v8 := 0xFF
             loop
+                v8 <<= v8
                 v3 <<= v3
+                if vF != 0 then v8 += 1
                 v2 -= 1
                 if v2 != 0 then
             again
@@ -514,11 +523,22 @@
                 0x00 0x00   # sprite address
                 # i points to start of sprite
                 i += v2
-                load v7 - v7
-                v7 &= v3  # Mask out overflowing bits / pixels
-                i := draw-sprite-store
-                i += v2
-                save v7 - v7
+                if v6 == 16 begin
+                    i += v2
+                    load vA - vB
+                    vA &= v8
+                    vB &= v3  # Mask out overflowing bits / pixels
+                    i := draw-sprite-store
+                    i += v2
+                    i += v2
+                    save vA - vB
+                else
+                    load vA - vA
+                    vA &= v3  # Mask out overflowing bits / pixels
+                    i := draw-sprite-store
+                    i += v2
+                    save vA - vA
+                end
                 v2 += 1
                 if v2 != v6 then
             again
@@ -533,17 +553,12 @@
     i := window-mode
     load vF - vF
     if vF != MODE_FULLSCREEN begin
-        # Super crappy moving registers around here... TODO: fix ;)
         v2 := v0
         v3 := v1
         vF := DISPLAY_BUFFER
         unpack-pointer
-        vA := v0
-        vB := v1
         v0 := v4
         v1 := v5
-        v4 := 1     # TODO: 16x16 sprites
-        v5 := vC
         blit-sprite
     else
         # Actually do the thing
