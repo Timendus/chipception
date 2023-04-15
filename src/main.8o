@@ -234,6 +234,7 @@
 
 :include "cycle.8o"
 :include "display.8o"
+:include "gui.8o"
 :include "fonts.8o"
 :include "roms.8o"
 

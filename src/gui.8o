@@ -1,0 +1,163 @@
+:const display-height 64
+
+# Draw fancy UI box with shadow
+# Inputs:
+#   * v0, v1 = top left
+#   * v2 = width in pixels
+#   * v3 = height in pixels
+: draw-box
+    i := display-buffer
+    v4 := 0xFF
+    jump draw-square
+
+    v4 := 0xFF
+    draw-horizonal-line
+    i := display-buffer
+    v4 := 0xFF
+    draw-vertical-line
+    v0 += v2
+    i := display-buffer
+    v4 := 0xFF
+    draw-vertical-line
+    v0 -= v2
+    v1 += v3
+    i := display-buffer
+    v4 := 0xFF
+    draw-horizonal-line
+    return
+
+# Draw horizonal line
+# Inputs:
+#   * i = buffer to draw to
+#   * v0, v1 = left start coordinate
+#   * v2 = length of line in pixels
+#   * v4 = colour (0xFF or 0x00)
+# Leaves v3 untouched
+: draw-horizonal-line
+    # Point i to the start byte
+    v5 := v0
+    v5 >>= v5
+    v5 >>= v5
+    v5 >>= v5
+    v6 := display-height
+    loop
+        while v5 != 0
+        i += v6
+        v5 -= 1
+    again
+    i += v1
+
+    # Create the right bitmasks for the pixel offset
+    v5 := v0
+    vF := 7
+    v5 &= vF
+    v6 := 0xFF
+    v7 := 0
+    loop
+        while v5 != 0
+        v6 >>= v6
+        v7 >>= v7
+        v7 += 128
+        v5 -= 1
+    again
+
+    # Draw start of line
+    load v5 - v5
+    v5 &= v7
+    if v4 != 0 then v5 |= v6
+    save v5 - v5
+
+    # Draw all the whole bytes of the line
+    v5 := v0
+    vF := 7
+    v5 &= vF
+    vF := 8
+    v5 =- vF
+    v7 := v2
+    v7 -= v5
+    v7 >>= v7
+    v7 >>= v7
+    v7 >>= v7
+    v5 := display-height
+    loop
+        while v7 != 0
+        i += v5
+        save v4 - v4
+        v7 -= 1
+    again
+    i += v5
+
+    # Create the right bitmasks for the end of the line
+    v5 := v0
+    v5 += v2
+    vF := 7
+    v5 &= vF
+    v6 := 0xFF
+    v7 := 0
+    loop
+        while v5 != 0
+        v6 >>= v6
+        v7 >>= v7
+        v7 += 128
+        v5 -= 1
+    again
+
+    # Draw end of line
+    load v5 - v5
+    v5 &= v6
+    if v4 != 0 then v5 |= v7
+    save v5 - v5
+
+    return
+
+# Draw vertical line
+# Inputs:
+#   * i = buffer to draw to
+#   * v0, v1 = top start coordinate
+#   * v3 = length of line in pixels
+#   * v4 = colour (0xFF or 0x00)
+# Leaves v2 untouched
+: draw-vertical-line
+    # Point i to the start byte
+    v5 := v0
+    v5 >>= v5
+    v5 >>= v5
+    v5 >>= v5
+    v6 := display-height
+    loop
+        while v5 != 0
+        i += v6
+        v5 -= 1
+    again
+    i += v1
+
+    # Create the right bitmask for the pixel offset
+    v5 := v0
+    vF := 7
+    v5 &= vF
+    v7 := 128
+    loop
+        while v5 != 0
+        v7 >>= v7
+        v5 -= 1
+    again
+    if v0 == 0 begin
+        vF := 0xFF
+        v7 ^= vF
+    end
+
+    # Draw the line
+    v6 := v3
+    v8 := 1
+    loop
+        while v6 != 0
+        load v5 - v5
+        if v4 == 0 then v5 &= v7
+        if v4 != 0 then v5 |= v7
+        save v5 - v5
+        i += v8
+        v6 -= 1
+    again
+
+    return
+
