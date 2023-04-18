@@ -559,6 +559,8 @@
         unpack-pointer
         v0 := v4
         v1 := v5
+        v9 := 64        # TODO: hires
+        vC := 32
         blit-sprite
     else
         # Actually do the thing

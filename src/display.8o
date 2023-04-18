@@ -70,7 +70,8 @@
 : display-overwrite
     i := overwrite-smc
     save v1
-    make16 v8 v9 0
+    v8 := 0
+    v9 := 0
     loop
         0xF0 0x00 # i := long ....
         : overwrite-smc
@@ -193,6 +194,7 @@
 # Inputs:
 #   * v0, v1 = pointer to sprite
 #   * vA, vB = pointer to buffer
+#   * v9, vC = target buffer width and height
 #   * v2 = X coordinate in pixels
 #   * v3 = Y coordinate in pixels
 #   * v6 = source height in pixels
@@ -205,14 +207,10 @@
 :alias rightPart v4
 :alias offset v1
 :alias row v8
-:alias column v9
-:alias flipped vA
-
-# TODO: hires
-:const target-buffer-width 64 # pixels
-:calc  target-buffer-width-mask { target-buffer-width - 1 }
-:const target-buffer-height 32 # pixels
-:calc  target-buffer-height-mask { target-buffer-height - 1 }
+:alias column vA
+:alias flipped vB
+:alias target-buffer-width v9
+:alias target-buffer-height vC
 
 : blit-sprite
     i := blit-sprite-smc1
@@ -220,8 +218,9 @@
     i := blit-sprite-smc2
     save vA - vB
 
-    vF := target-buffer-width-mask
-    X &= vF
+    v0 := target-buffer-width
+    v0 -= 1
+    X &= v0
 
     column := 0
     flipped := 0
@@ -273,8 +272,9 @@
             # Get right row
             v0 := Y
             v0 += row
-            vF := target-buffer-height-mask
-            v0 &= vF
+            # v1 is still target-buffer-height
+            v1 -= 1
+            v0 &= v1
             i += v0
 
             # i now points to the right byte, so write it!
@@ -284,7 +284,9 @@
             if v1 != 0 then flipped := 1
             v0 ^= leftPart
             save v0 - v0
-            if X < 56 begin
+            v0 := target-buffer-width
+            v0 -= 8
+            if X < v0 begin
                 vF := target-buffer-height
                 i += vF
                 load v0 - v0
