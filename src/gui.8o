@@ -5,36 +5,122 @@
 #   * v0, v1 = top left
 #   * v2 = width in pixels
 #   * v3 = height in pixels
+#   * vC = border colour (0x00 for blue, 0xFF for orange)
 : draw-box
-    # Draw white background
-    i := long display-buffer-plane1
-    v4 := 0x00
-    draw-square
+    # Overwrite plane 2, because the display buffers of the interpreters don't
+    # have a plane two.
     i := long display-buffer-plane2
     v4 := 0x00
     draw-square
 
-    # Draw blue borders
-    i := long display-buffer-plane2
-    v4 := 0xFF
+    # Draw all four borders
+
+    # Top
+    i := long display-buffer-plane1
+    v4 := vC
     draw-horizonal-line
     i := long display-buffer-plane2
     v4 := 0xFF
+    draw-horizonal-line
+
+    # Left
+    i := long display-buffer-plane1
+    v4 := vC
     draw-vertical-line
+    i := long display-buffer-plane2
+    v4 := 0xFF
+    draw-vertical-line
+
+    # Right
     v0 += v2
     v0 -= 1
+    i := long display-buffer-plane1
+    v4 := vC
+    draw-vertical-line
     i := long display-buffer-plane2
     v4 := 0xFF
     draw-vertical-line
-    v0 -= v2
     v0 += 1
+    v1 += 1
+    i := long display-buffer-plane1
+    draw-vertical-line
+    i := long display-buffer-plane2
+    v4 := 0x00
+    draw-vertical-line
+
+    # Bottom
+    v0 -= v2
     v1 += v3
     v1 -= 1
+    v0 += 1
+    i := long display-buffer-plane1
+    v4 := 0xFF
+    draw-horizonal-line
+    i := long display-buffer-plane2
+    v4 := 0x00
+    draw-horizonal-line
+    v0 -= 1
+    v1 -= 1
+    i := long display-buffer-plane1
+    v4 := vC
+    draw-horizonal-line
     i := long display-buffer-plane2
     v4 := 0xFF
     draw-horizonal-line
+    v1 -= v3
+    v1 += 2
 
     return
+
+# Draw UI box program header
+# Inputs:
+#   * v0, v1 = top left
+#   * v2 = width in pixels
+#   * vC = border colour (0x00 for blue, 0xFF for orange)
+: draw-header
+    v3 := 6
+    i := long display-buffer-plane1
+    v4 := vC
+    draw-square
+    i := long display-buffer-plane2
+    v4 := 0xFF
+    draw-square
+
+    v2 += v0
+    v2 -= 15
+    v3 := v1
+    :alias unpack-hi v0
+    :alias unpack-lo v1
+    :unpack long header-fade
+    :alias unpack-hi vA
+    :alias unpack-lo vB
+    :unpack long display-buffer-plane2
+    v6 := 5
+    v7 := 2
+    v9 := 128
+    if vC == 0xFF begin
+        vC := 64
+        blit-sprite
+        :alias unpack-hi v0
+        :alias unpack-lo v1
+        :unpack long header-fade
+        :alias unpack-hi vA
+        :alias unpack-lo vB
+        :unpack long display-buffer-plane1
+    end
+    vC := 64
+    jump blit-sprite
+
+:segment data
+
+: header-fade
+    0x25 0xDC
+    0x8B 0x7C
+    0x25 0xDC
+    0x8B 0x7C
+    0x25 0xDC
+
+:segment code
 
 # Draw horizonal line
 # Inputs:
@@ -151,7 +237,7 @@
         v7 >>= v7
         v5 -= 1
     again
-    if v0 == 0 begin
+    if v4 == 0 begin
         vF := 0xFF
         v7 ^= vF
     end

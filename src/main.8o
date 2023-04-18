@@ -96,6 +96,16 @@
 
             # Render this CPUs display
             point-to WINDOW_POSITION
+            load v0 - v1
+            v0 -= 1
+            v1 -= 7
+            v2 := 66
+            v3 := 40
+            vC := 0xFF
+            if current-machine == 2 then vC := 0x00
+            draw-box
+            draw-header
+            point-to WINDOW_POSITION
             load v2 - v3
             vF := DISPLAY_BUFFER
             unpack-pointer
