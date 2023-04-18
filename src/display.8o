@@ -5,7 +5,7 @@
 : display-copy
     i := display-copy-values
     load v7
-    i := display-buffer
+    i := long display-buffer
 
     plane 3
     clear
@@ -42,7 +42,7 @@
 : display-clear
     i := display-clear-values
     load vD
-    i := display-buffer
+    i := long display-buffer
     display-clear-224
     display-clear-224
     display-clear-224
@@ -79,7 +79,7 @@
         vA := v8
         add-to-i vA v9
         load v7
-        i := display-buffer
+        i := long display-buffer
         vA := v8
         add-to-i vA v9
         save v7

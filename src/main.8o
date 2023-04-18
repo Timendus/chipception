@@ -25,7 +25,7 @@
     # Make sure we are running in hires ourselves and we sound friendly
     hires
     clear
-    i := beep-pattern
+    i := long beep-pattern
     audio
     v0 := 70
     pitch := v0
@@ -215,11 +215,11 @@
     return
 
 : select-machine
-    i := machines
+    i := long machines
     i += current-machine
     i += current-machine
     load v1
-    i := current-machine-ptr
+    i := long current-machine-ptr
     save v1
     return
 

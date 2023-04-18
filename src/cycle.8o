@@ -216,7 +216,7 @@
 
     # Clear screen
     if v1 == 0xE0 begin
-        i := window-mode
+        i := long window-mode
         load v0
         if v0 == MODE_FULLSCREEN begin
             clear
@@ -475,7 +475,7 @@
     save v2 - v2
 
     # Set i register
-    i := current-machine-ptr
+    i := long current-machine-ptr
     load v4 - v5
     vF := RAM
     v5 += vF
@@ -528,14 +528,14 @@
                     load vA - vB
                     vA &= v8
                     vB &= v3  # Mask out overflowing bits / pixels
-                    i := draw-sprite-store
+                    i := long draw-sprite-store
                     i += v2
                     i += v2
                     save vA - vB
                 else
                     load vA - vA
                     vA &= v3  # Mask out overflowing bits / pixels
-                    i := draw-sprite-store
+                    i := long draw-sprite-store
                     i += v2
                     save vA - vA
                 end
@@ -550,7 +550,7 @@
     i := draw-sprite-smc2
     save v4 - v5
 
-    i := window-mode
+    i := long window-mode
     load vF - vF
     if vF != MODE_FULLSCREEN begin
         v2 := v0
