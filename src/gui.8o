@@ -43,9 +43,9 @@
     v0 += 1
     v1 += 1
     i := long display-buffer-plane1
+    v4 := 0x00
     draw-vertical-line
     i := long display-buffer-plane2
-    v4 := 0x00
     draw-vertical-line
 
     # Bottom
@@ -54,10 +54,8 @@
     v1 -= 1
     v0 += 1
     i := long display-buffer-plane1
-    v4 := 0xFF
     draw-horizonal-line
     i := long display-buffer-plane2
-    v4 := 0x00
     draw-horizonal-line
     v0 -= 1
     v1 -= 1
@@ -98,7 +96,7 @@
     v6 := 5
     v7 := 2
     v9 := 128
-    if vC == 0xFF begin
+    if vC == 0x00 begin
         vC := 64
         blit-sprite
         :alias unpack-hi v0
@@ -114,11 +112,11 @@
 :segment data
 
 : header-fade
-    0x25 0xDC
-    0x8B 0x7C
-    0x25 0xDC
-    0x8B 0x7C
-    0x25 0xDC
+    0x25 0x7C
+    0x8B 0xDC
+    0x25 0x7C
+    0x8B 0xDC
+    0x25 0x7C
 
 :segment code
 
