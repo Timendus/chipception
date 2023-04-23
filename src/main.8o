@@ -70,14 +70,13 @@
             current-machine += 1
         again
 
-        # Run all the timer stuff for each CPU and render to screen
-        display-clear
+        # Run all the timer stuff for each CPU
         current-machine := 0
         vD := 0
+        i := long current-number-of-machines
+        load vC - vC
         loop
-            i := long current-number-of-machines
-            load v0
-            while current-machine != v0
+            while current-machine != vC
             select-machine
             point-to RUNNING
             load v0
@@ -101,32 +100,41 @@
                 if v0 == STATE_WAITING_FOR_INTERRUPT then
                     v0 := STATE_INTERRUPT_TRIGGERED
                 save v0
-
-                # Render this CPUs display
-                point-to WINDOW_POSITION
-                load v0 - v1
-                v0 -= 1
-                v1 -= 7
-                v2 := 66
-                v3 := 40
-                point-to FOCUSSED
-                load v4 - v4
-                vC := 0xFF
-                if v4 == 1 then vC := 0
-                draw-box
-                draw-header
-                point-to WINDOW_POSITION
-                load v2 - v3
-                vF := DISPLAY_BUFFER
-                unpack-pointer
-                v4 := 8             # TODO: hires
-                v5 := 32
-                blit-to-display
             end
 
             current-machine += 1
         again
         buzzer := vD
+
+        # Composite the display
+        display-clear
+        vD := 1
+        loop
+            # Find the interpreter at this depth
+            find-z-position
+            while v2 == 0
+            # Render this CPUs display
+            point-to WINDOW_POSITION
+            load v0 - v1
+            v0 -= 1
+            v1 -= 7
+            v2 := 66
+            v3 := 40
+            point-to FOCUSSED
+            load v4 - v4
+            vC := 0xFF
+            if v4 == 1 then vC := 0
+            draw-box
+            draw-header
+            point-to WINDOW_POSITION
+            load v2 - v3
+            vF := DISPLAY_BUFFER
+            unpack-pointer
+            v4 := 8             # TODO: hires
+            v5 := 32
+            blit-to-display
+            vD += 1
+        again
         display-copy
 
         # Wait to sync up with reality
@@ -161,6 +169,28 @@
         end
     again
 
+# Input: vD is desired z-position
+# Returns: right machine selected and v2 == 0 or not found and v2 == 1
+: find-z-position
+    current-machine := 0
+    i := long current-number-of-machines
+    load vC - vC
+    : -
+        v2 := 1
+        if current-machine == vC then return
+        v2 := 0
+        select-machine
+        current-machine += 1
+        point-to RUNNING
+        load v0
+        if v0 == STATE_STOPPED then jump -
+        point-to WINDOW_POSITION_Z
+        load v0
+        if v0 == vD then return
+        jump -
+
+# Update the focussed properties on all machines. Purposeful side-effect:
+# selects the focussed machine
 : update-focussed
     # Find window with highest Z position that's running
     current-machine := 0
@@ -312,6 +342,8 @@
 
 :segment data
 
+: window-mode
+    :byte MODE_WINDOWED
 : current-machine-ptr
     :pointer free-memory
 : current-number-of-machines

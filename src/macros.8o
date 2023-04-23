@@ -53,10 +53,10 @@
     save v1
     point-to WINDOW_POSITION_Z
     save v2 - v2
-    reset
     set8 WINDOW_POSITION_X XPOS
     set8 WINDOW_POSITION_Y YPOS
     set-quirks CHOSEN-QUIRKS
+    reset
 }
 
 # Helpers for setting values in memory
@@ -146,8 +146,3 @@
     vF := CHOSEN-QUIRKS
     save vF - vF
 }
-
-:segment data
-
-: window-mode
-    :byte MODE_WINDOWED
