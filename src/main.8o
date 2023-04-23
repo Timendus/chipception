@@ -35,16 +35,14 @@
     v0 := 70
     pitch := v0
 
-    loop
-        init 0  0  0 SUPERCHIP rom-pong
-        init 1 64  0 SUPERCHIP rom-space-invaders
-        init 2  0 32 CHIP8     rom-christmas
-        init 3 64 32 CHIP8     rom-sierpinski
-        run-interpreters
-    again
+    # Initialize the booting programs
+    init 3 10 10 CHIP8     rom-clip-test
+    reset-quirk CLIP_QUIRK
+    init 1 38  8 SUPERCHIP rom-space-invaders
+    init 2  5 22 CHIP8     rom-christmas
+    init 0 60 29 VIP       rom-flags
 
-# Run until program exits or magic key combo is pressed
-: run-interpreters
+    # Run forever
     loop
         v0 := 1
         delay := v0
@@ -133,11 +131,31 @@
             if v0 != 0 then
         again
 
-        # Check for magic key combo
-        v0 := 0
+        # Check for magic key combo's
+        v0 := 0xA
         if v0 key begin
-            v0 := 0xA
-            if v0 key then return
+
+            # Z + R -> Reset program
+            v0 := 0xD
+            if v0 key begin
+                reset
+            end
+
+            # Z + 1 -> Cycle through programs
+            # v0 := 1
+            # if v0 key then ...
+
+            # Z + Q -> Close program
+            v0 := 4
+            if v0 key begin
+                point-to RUNNING
+                v0 := STATE_STOPPED
+                save v0
+            end
+
+            # Z + F -> Go full screen
+            # v0 := 0xE
+            # if v0 key then ...
         end
     again
 
@@ -148,41 +166,49 @@
     set8  DISPLAY_MODE     DISPLAY_LORES
     set8  RUNNING          STATE_RUNNING
     set8  CYCLES_PER_FRAME 30
-    return
+    clear-screen
+    :alias unpack-hi v1
+    :alias unpack-lo v2
+    :unpack long chip-8-font
+    load-font
+    # load-program  # Fall through
+    # return
 
-# (v1, v2) point to program data, copy it into RAM at 0x200
+# Copy interpreter's ROM into RAM at 0x200
 : load-program
-    make16 v3 v4 0
+    point-to ROM
+    load v1
+    i := load-program-smc
+    save v1
+    make16 vC vD 0
     loop
-        i := load-program-smc
-        save v1 - v2
         0xF0 0x00
         : load-program-smc
         0x00 0x00
         # i == program address
         load-program-add
         # i == byte within program
-        load v0
+        load v7
         point-to RAM
-        v3 += 2
+        vC += 2
         load-program-add
-        v3 -= 2
-        save v0
+        vC -= 2
+        save v7
 
         # Increase index
-        vF := 1
-        v4 += vF
-        v3 += vF
+        vF := 8
+        vD += vF
+        vC += vF
 
         # Are we done? (Just fill RAM, whatever)
-        if v3 != 0x0E then
+        if vC != 0x0E then
     again
     return
 
 # Add (v3, v4) as one 16-bit number to the index register
 : load-program-add
-    v5 := v3
-    add-to-i v5 v4
+    vB := vC
+    add-to-i vB vD
     return
 
 # (v1, v2) point to font data, copy it into RAM at 0x000

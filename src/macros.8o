@@ -10,11 +10,11 @@
 :calc  USERFLAGS         { SOUND_TIMER + 1 }
 
 :calc  RUNNING           { USERFLAGS + 16 }
-:calc  DISPLAY_MODE      { RUNNING + 1 }
+:calc  ROM               { RUNNING + 1 }
+:calc  DISPLAY_MODE      { ROM + 2 }
 :calc  QUIRKS            { DISPLAY_MODE + 1 }
 :calc  CYCLES_PER_FRAME  { QUIRKS + 1 }
-:calc  CYCLE             { CYCLES_PER_FRAME + 1 }
-:calc  WINDOW_POSITION   { CYCLE + 1 }
+:calc  WINDOW_POSITION   { CYCLES_PER_FRAME + 1 }
 :calc  WINDOW_POSITION_X { WINDOW_POSITION + 0 }
 :calc  WINDOW_POSITION_Y { WINDOW_POSITION + 1 }
 
@@ -37,18 +37,17 @@
 
 # Initializing interpreters
 
-:macro init MACHINE XPOS YPOS CHOSEN-QUIRKS ROM {
+:macro init MACHINE XPOS YPOS CHOSEN-QUIRKS MY_ROM {
     current-machine := MACHINE
     select-machine
+    :alias unpack-hi v0
+    :alias unpack-lo v1
+    :unpack long MY_ROM
+    point-to ROM
+    save v1
     reset
     set8 WINDOW_POSITION_X XPOS
     set8 WINDOW_POSITION_Y YPOS
-    :alias unpack-hi v1
-    :alias unpack-lo v2
-    :unpack long chip-8-font
-    load-font
-    :unpack long ROM
-    load-program
     set-quirks CHOSEN-QUIRKS
 }
 
