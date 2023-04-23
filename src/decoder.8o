@@ -1,0 +1,190 @@
+# Decode the instruction and jump to the right opcode ASAP
+
+:alias opcode-hi v2
+:alias opcode-lo v3
+:alias second-nibble v4
+:alias vX v5
+:alias vY v6
+
+: run-cycle
+    # Load and increase PC
+    point-to PC
+    load v0 - v1
+    v2 := v0
+    v3 := v1
+    vF := 2
+    v1 += vF
+    v0 += vF
+    save v0 - v1
+
+    # Load opcode from memory
+    point-to RAM
+    add-to-i v2 v3
+    load opcode-hi - opcode-lo
+    second-nibble := opcode-hi
+    vF := 0x0F
+    second-nibble &= vF
+
+    # Jump on first nibble
+    v0 := opcode-hi
+    v0 >>= v0
+    v0 >>= v0
+    v0 >>= v0
+    v0 >>= v0
+    v0 <<= v0
+    jump0 jump-table-NXXX
+
+: jump-table-NXXX
+    jump range-00NX   # 0x0
+    jump jump-to      # 0x1
+    jump call-to      # 0x2
+    jump skip-eq-val  # 0x3
+    jump skip-neq-val # 0x4
+    jump skip-eq-reg  # 0x5
+    jump set-reg      # 0x6
+    jump add-value    # 0x7
+    jump range-8XXX   # 0x8
+    jump skip-neq-reg # 0x9
+    jump set-i        # 0xA
+    jump jump0-to     # 0xB
+    jump set-random   # 0xC
+    jump draw-sprite  # 0xD
+    jump range-E0XX   # 0xE
+    jump range-F0XX   # 0xF
+
+: range-00NX
+    v0 := opcode-lo
+    v0 >>= v0
+    v0 >>= v0
+    v0 >>= v0
+    v0 >>= v0
+    v0 -= 0xC
+    v0 <<= v0
+    jump0 jump-table-00NX
+
+: jump-table-00NX
+    jump scrll-down      # 0xC
+    jump unknown-opcode  # 0xD
+    jump range-00EN      # 0xE
+    jump range-00FN      # 0xF
+
+: range-00EN
+    if opcode-lo == 0xEE then jump ret
+    jump clear-screen
+
+: range-00FN
+    v0 := opcode-lo
+    vF := 0xF
+    v0 &= vF
+    v0 -= 0xB
+    v0 <<= v0
+    jump0 jump-table-00FN
+
+: jump-table-00FN
+    jump scrll-right      # 0xB
+    jump scrll-left       # 0xC
+    jump exit-interpreter # 0xD
+    jump set-lores        # 0xE
+    jump set-hires        # 0xF
+
+: range-8XXX # maths
+    # Pre-load register Y
+    point-to REGISTERS
+    v0 := opcode-lo
+    v0 >>= v0
+    v0 >>= v0
+    v0 >>= v0
+    v0 >>= v0
+    i += v0
+    load vY - vY
+
+    # Pre-load register X
+    point-to REGISTERS
+    i += second-nibble
+    load vX - vX
+
+    # Jump
+    v0 := opcode-lo
+    vF := 0xF
+    v0 &= vF
+    v0 <<= v0
+    jump0 jump-table-8XXN
+
+: jump-table-8XXN
+    jump copy-reg        # 0x0
+    jump or-reg          # 0x1
+    jump and-reg         # 0x2
+    jump xor-reg         # 0x3
+    jump add-reg         # 0x4
+    jump sub-reg         # 0x5
+    jump shift-right     # 0x6
+    jump reg-sub         # 0x7
+    jump unknown-opcode  # 0x8
+    jump unknown-opcode  # 0x9
+    jump unknown-opcode  # 0xA
+    jump unknown-opcode  # 0xB
+    jump unknown-opcode  # 0xC
+    jump unknown-opcode  # 0xD
+    jump shift-left      # 0xE
+
+: range-E0XX
+    point-to REGISTERS
+    i += second-nibble
+    load vX - vX
+    if opcode-lo == 0x9E then jump skip-key-pressed
+    if opcode-lo == 0xA1 then jump skip-key-released
+    jump unknown-opcode
+
+: range-F0XX
+    # Pre-load i to point to register X
+    point-to REGISTERS
+    i += second-nibble
+
+    # Jump
+    v0 := opcode-lo
+    vF := 0xF
+    v0 &= vF
+    v0 <<= v0
+    jump0 jump-table-F0XN
+
+: jump-table-F0XN
+    jump set-big-font       # 0x0
+    jump unknown-opcode     # 0x1
+    jump unknown-opcode     # 0x2
+    jump bcd-encode         # 0x3
+    jump unknown-opcode     # 0x4
+    jump range-F0N5         # 0x5
+    jump unknown-opcode     # 0x6
+    jump read-delay         # 0x7
+    jump write-sound        # 0x8
+    jump set-font           # 0x9
+    jump get-key            # 0xA
+    jump unknown-opcode     # 0xB
+    jump unknown-opcode     # 0xC
+    jump unknown-opcode     # 0xD
+    jump add-to-i           # 0xE
+
+: range-F0N5
+    v0 := opcode-lo
+    v0 >>= v0
+    v0 >>= v0
+    v0 >>= v0
+    v0 >>= v0
+    v0 <<= v0
+    jump0 jump-table-F0N5
+
+: jump-table-F0N5
+    jump unknown-opcode     # 0x0
+    jump write-delay        # 0x1
+    jump unknown-opcode     # 0x2
+    jump unknown-opcode     # 0x3
+    jump unknown-opcode     # 0x4
+    jump write-to-memory    # 0x5
+    jump read-from-memory   # 0x6
+    jump write-to-flags     # 0x7
+    jump read-from-flags    # 0x8
+
+# We should never get here
+: unknown-opcode
+    :breakpoint unknown-opcode
+    loop again
