@@ -17,8 +17,10 @@
 :calc  WINDOW_POSITION   { CYCLES_PER_FRAME + 1 }
 :calc  WINDOW_POSITION_X { WINDOW_POSITION + 0 }
 :calc  WINDOW_POSITION_Y { WINDOW_POSITION + 1 }
+:calc  WINDOW_POSITION_Z { WINDOW_POSITION + 2 }
+:calc  FOCUSSED          { WINDOW_POSITION + 3 }
 
-:calc  RAM               { WINDOW_POSITION + 2 }
+:calc  RAM               { FOCUSSED + 1 }
 :calc  DISPLAY_BUFFER    { RAM + 180 }
 :calc  MACHINE_SIZE      { RAM + 4096 }
 
@@ -38,6 +40,10 @@
 # Initializing interpreters
 
 :macro init MACHINE XPOS YPOS CHOSEN-QUIRKS MY_ROM {
+    i := long current-number-of-machines
+    load v2 - v2
+    v2 += 1
+    save v2 - v2
     current-machine := MACHINE
     select-machine
     :alias unpack-hi v0
@@ -45,6 +51,8 @@
     :unpack long MY_ROM
     point-to ROM
     save v1
+    point-to WINDOW_POSITION_Z
+    save v2 - v2
     reset
     set8 WINDOW_POSITION_X XPOS
     set8 WINDOW_POSITION_Y YPOS
