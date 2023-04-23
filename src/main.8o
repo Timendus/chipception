@@ -52,25 +52,22 @@
         # Run each CPU for the requested number of cycles
         current-machine := 0
         loop
+            i := current-number-of-machines
+            load v0
+            while current-machine != v0
             select-machine
             point-to RUNNING
             load v0
             if v0 != STATE_STOPPED begin
                 point-to CYCLES_PER_FRAME
-                load v0
-                point-to CYCLE
-                save v0
+                load cycle - cycle
                 loop
                     run-cycle
-                    point-to CYCLE
-                    load v0 - v0
-                    v0 -= 1
-                    save v0
-                    if v0 != 0 then
+                    cycle -= 1
+                    if cycle != 0 then
                 again
             end
             current-machine += 1
-            if current-machine != NUM_MACHINES then
         again
 
         # Run all the timer stuff for each CPU and render to screen
@@ -78,48 +75,54 @@
         current-machine := 0
         vD := 0
         loop
+            i := current-number-of-machines
+            load v0
+            while current-machine != v0
             select-machine
-            # Decrement timers and play sound
-            point-to DELAY_TIMER
-            load v0 - v0
-            if v0 != 0 then v0 -= 1
-            save v0
-            point-to SOUND_TIMER
-            load v0 - v0
-            if v0 != 0 begin
-                v0 -= 1
-                vD := 1
-            end
-            save v0
-
-            # Check if we're waiting for dispQuirk
             point-to RUNNING
-            load v0 - v0
-            if v0 == STATE_WAITING_FOR_INTERRUPT then
-                v0 := STATE_INTERRUPT_TRIGGERED
-            save v0
+            load v0
+            if v0 != STATE_STOPPED begin
+                # Decrement timers and play sound
+                point-to DELAY_TIMER
+                load v0 - v0
+                if v0 != 0 then v0 -= 1
+                save v0
+                point-to SOUND_TIMER
+                load v0 - v0
+                if v0 != 0 begin
+                    v0 -= 1
+                    vD := 1
+                end
+                save v0
 
-            # Render this CPUs display
-            point-to WINDOW_POSITION
-            load v0 - v1
-            v0 -= 1
-            v1 -= 7
-            v2 := 66
-            v3 := 40
-            vC := 0xFF
-            if current-machine == 2 then vC := 0x00
-            draw-box
-            draw-header
-            point-to WINDOW_POSITION
-            load v2 - v3
-            vF := DISPLAY_BUFFER
-            unpack-pointer
-            v4 := 8             # TODO: hires
-            v5 := 32
-            blit-to-display
+                # Check if we're waiting for dispQuirk
+                point-to RUNNING
+                load v0 - v0
+                if v0 == STATE_WAITING_FOR_INTERRUPT then
+                    v0 := STATE_INTERRUPT_TRIGGERED
+                save v0
+
+                # Render this CPUs display
+                point-to WINDOW_POSITION
+                load v0 - v1
+                v0 -= 1
+                v1 -= 7
+                v2 := 66
+                v3 := 40
+                vC := 0xFF
+                if current-machine == 2 then vC := 0x00
+                draw-box
+                draw-header
+                point-to WINDOW_POSITION
+                load v2 - v3
+                vF := DISPLAY_BUFFER
+                unpack-pointer
+                v4 := 8             # TODO: hires
+                v5 := 32
+                blit-to-display
+            end
 
             current-machine += 1
-            if current-machine != NUM_MACHINES then
         again
         buzzer := vD
         display-copy
@@ -232,9 +235,10 @@
 
 : current-machine-ptr
     :pointer free-memory
+: current-number-of-machines
+    3
 
-:monitor current-machine-ptr "0x%2x"
-:monitor current-machine 1
+:monitor current-number-of-machines 1
 
 : beep-pattern
     0xFF 0x00 0xFF 0x00 0xFF 0x00 0xFF 0x00 0xFF 0x00 0xFF 0x00 0xFF 0x00 0xFF 0x00

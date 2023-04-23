@@ -22,8 +22,8 @@
 :calc  DISPLAY_BUFFER    { RAM + 180 }
 :calc  MACHINE_SIZE      { RAM + 4096 }
 
+:alias cycle vD
 :alias current-machine vE
-:const NUM_MACHINES 4
 :const MAX_MACHINES 6
 
 :macro point-to PTR {
