@@ -2,25 +2,30 @@
 
 : main
 
-    # Initialize machines table (should be dynamic at some point)
+    # Initialize machines table at `free-memory`, machines will be created after
+    # the machines table.
     :alias unpack-hi v0
     :alias unpack-lo v1
     :unpack long free-memory
-    i := long machines
-    save v1
+    v4 := MAX_MACHINES
+    v1 += v4
+    v0 += vF
+    v1 += v4
+    v0 += vF
     make16 v2 v3 MACHINE_SIZE
-    v1 += v3
-    v0 += vF
-    v0 += v2
-    save v1
-    v1 += v3
-    v0 += vF
-    v0 += v2
-    save v1
-    v1 += v3
-    v0 += vF
-    v0 += v2
-    save v1
+    i := long free-memory
+    loop
+        save v1
+        v1 += v3
+        v0 += vF
+        v0 += v2
+        if vF != 0 begin
+            :breakpoint "Can't store that many machines"
+            no-op
+        end
+        v4 -= 1
+        if v4 != 0 then
+    again
 
     # Make sure we are running in hires ourselves and we sound friendly
     hires
@@ -215,7 +220,7 @@
     return
 
 : select-machine
-    i := long machines
+    i := long free-memory
     i += current-machine
     i += current-machine
     load v1
@@ -224,14 +229,6 @@
     return
 
 :segment data
-
-: machines
-    0 0
-    0 0
-    0 0
-    0 0
-
-:monitor machines "0x%2x 0x%2x"
 
 : current-machine-ptr
     :pointer free-memory

@@ -24,10 +24,15 @@
 
 :alias current-machine vE
 :const NUM_MACHINES 4
+:const MAX_MACHINES 6
 
 :macro point-to PTR {
     vF := PTR
     pointer-to
+}
+
+:macro no-op {
+    v0 += 0
 }
 
 # Initializing interpreters
