@@ -1,6 +1,7 @@
-# 8ception
+# Chipception
 
-Because CHIP-8 interpreters have been written in *every* programming language. Except for CHIP-8 💡😄
+Because CHIP-8 interpreters have been written in *every* programming language,
+except in CHIP-8 itself. Until now! 😄
 
 ## TODO list
 
@@ -31,10 +32,10 @@ Because CHIP-8 interpreters have been written in *every* programming language. E
 
 ## Wait but why..?
 
-I've been thinking about writing a CHIP-8 interpreter in CHIP-8 for a year or
-so. Yeah, you read that right. An interpreter for the CHIP-8 bytecode, itself
-programmed in CHIP-8. It's just such an insane idea that I can't help but find
-myself attracted to it.
+I've been thinking about writing a CHIP-8 interpreter in CHIP-8 for almost two
+years or so. Yeah, you read that right. An interpreter for the CHIP-8 bytecode,
+itself programmed in CHIP-8. It's just such an insane idea that I can't help
+but find myself attracted to it.
 
 To be clear: there is absolutely no benefit to just having a CHIP-8 interpreter
 written in CHIP-8. It would only allow you to run the exact same programs, but
@@ -53,9 +54,9 @@ interpreter, and run just fine in your interpreter.
 Another kinda cool thing that I wanted to experiment with is multithreaded
 CHIP-8. A CHIP-8 interpreter written in CHIP-8 could theoretically run multiple
 CHIP-8 programs in parallel on a single host interpreter. This has no real
-benefit, but it would be something cool to play with. It also touches on another
-itch that I had for a while and that kinda needed scratching: writing an
-operating system for CHIP-8.
+benefit, but it would be something cool to play with. It also touches on
+another itch that I have had for a while and that kinda needed scratching:
+writing an operating system for CHIP-8.
 
 Last Octojam sysl made [a program that was a mock-up of a CHIP-8 PDA operating
 system](https://sysl.itch.io/bim-logo-animation), that they called BIM. It makes
@@ -86,8 +87,8 @@ about its potential, let's get to coding 😉
 
 ## Getting started
 
-I came up with the project name "8ception", short for "CHIP-8 Inception", and
-got to work.
+I came up with the project name "Chipception", short for "CHIP-8 Inception",
+and got to work.
 
 ### So what are we up against?
 
@@ -119,7 +120,7 @@ interpreter, we have to make a copy of the ROM before we start execution.
 Because of these memory requirements and the CPU overhead I very soon had to
 accept the fact that this was going to be an XO-CHIP project. And that it will
 only interpret systems that require less memory than XO-CHIP, like CHIP-8 and
-SUPERCHIP.
+SUPER-CHIP.
 
 ### Getting things going!
 
@@ -131,7 +132,7 @@ running and passing most of the available tests.
 
 The [quirks test](https://github.com/Timendus/chip8-test-suite#quirks-test) was
 the hardest to get right, because I was targeting CHIP-8 and SUPERCHIP, but my
-host system was using XO-CHIP quirks. So my 8ception interpreter needed to
+host system was using XO-CHIP quirks. So my Chipception interpreter needed to
 implement versions of the required quirks, using the XO-CHIP quirks. Especially
 getting the `sprite` opcode to clip properly on the edges of the screen was a
 bit of a pain. It also required quite a few cycles per frame.
@@ -151,10 +152,10 @@ this project in the direction of running multiple interpreters in parallel. If
 you can run multiple programs next to each other, surely that's obviously
 something new. Something different.
 
-Because all my code was already operating on virtual registers in memory, it was
-actually not that hard to get it to run multiple virtual CPUs in parallel.
-Making use of the fact that SUPERCHIP `hires` is twice the CHIP-8 `lores`
-resolution, I could pretty quickly get 8ception to render this:
+Because all my code was already operating on virtual registers in memory, it
+was actually not that hard to get it to run multiple virtual CPUs in parallel.
+Making use of the fact that SUPER-CHIP `hires` is twice the CHIP-8 `lores`
+resolution, I could pretty quickly get Chipception to render this:
 
 ![Running multiple interpreters in split-screen](./pictures/split-screen.gif)
 
@@ -168,9 +169,9 @@ useful behaviour.
 
 Virtualising the display turned out to be a lot more work than doing the CPU. I
 had to -- once again -- write a custom double buffered rendering system with a
-custom sprite drawing routine in CHIP-8 that could draw 8xN and 16x16 sprites as
-well as get all the quirks right. Then I had to implement the `clear` opcode and
-all the scrolling opcodes to operate on those buffers. Just so that each
+custom sprite drawing routine in CHIP-8 that could draw 8xN and 16x16 sprites
+as well as get all the quirks right. Then I had to implement the `clear` opcode
+and all the scrolling opcodes to operate on those buffers. Just so that each
 interpreter could have its own isolated display behaviour.
 
 And then I needed to composit those discrete display buffers together to form
@@ -188,9 +189,9 @@ lay-out?
 
 Yeah. So that took me way longer than I care to admit. I put the project down
 for a couple of days, just because I was too annoyed I couldn't get the damn
-routine to draw a bloody horizontal line 😂 But after taking a few breaths and a
-couple of days off, I managed to produce some primitive drawing routines and now
-all of a sudden 8ception could do this:
+routine to draw a bloody horizontal line 😂 But after taking a few breaths and
+a couple of days off, I managed to produce some primitive drawing routines and
+now all of a sudden 8ception could do this:
 
 ![Running multiple interpreters in windows with borders](./pictures/bordered-windows.gif)
 

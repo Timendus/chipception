@@ -1,8 +1,8 @@
 {
-    "name": "8ception",
+    "name": "Chipception",
     "scripts": {
         "copy": "../../chiplet/build/bin/chiplet src/main.8o -P | pbcopy",
-        "assemble": "../../chiplet/build/bin/chiplet src/main.8o -o dist/8ception.ch8",
+        "assemble": "../../chiplet/build/bin/chiplet src/main.8o -o dist/chipception.ch8",
         "start": "npm run copy && npm run assemble"
     }
 }
