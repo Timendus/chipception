@@ -52,6 +52,7 @@
     point-to ROM
     save v1
     point-to WINDOW_POSITION_Z
+    v2 -= 1
     save v2 - v2
     set8 WINDOW_POSITION_X XPOS
     set8 WINDOW_POSITION_Y YPOS

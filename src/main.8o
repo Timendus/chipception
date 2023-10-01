@@ -108,7 +108,7 @@
 
         # Composite the display
         display-clear
-        vD := 1
+        vD := 0
         loop
             # Find the interpreter at this depth
             find-z-position
@@ -152,8 +152,8 @@
             if v0 key then reset-focussed
 
             # Z + 1 -> Cycle through programs
-            # v0 := 1
-            # if v0 key then ...
+            v0 := 1
+            if v0 key then alt-tab
 
             # Z + Q -> Close program
             v0 := 4
@@ -169,28 +169,32 @@
         end
     again
 
+# Find the machine that is at the given z-position.
 # Input: vD is desired z-position
-# Returns: right machine selected and v2 == 0 or not found and v2 == 1
+# Returns:
+#  * v2 == 0 if found; right machine selected
+#  * v2 == 1 if not found
 : find-z-position
     current-machine := 0
     i := long current-number-of-machines
     load vC - vC
-    : -
-        v2 := 1
-        if current-machine == vC then return
-        v2 := 0
-        select-machine
-        current-machine += 1
-        point-to RUNNING
-        load v0
-        if v0 == STATE_STOPPED then jump -
-        point-to WINDOW_POSITION_Z
-        load v0
-        if v0 == vD then return
-        jump -
+: find-z-pos-loop
+    v2 := 1
+    if current-machine == vC then return
+    v2 := 0
+    select-machine
+    current-machine += 1
+    point-to RUNNING
+    load v0
+    if v0 == STATE_STOPPED then jump find-z-pos-loop
+    point-to WINDOW_POSITION_Z
+    load v0
+    if v0 == vD then return
+    jump find-z-pos-loop
 
-# Update the focussed properties on all machines. Purposeful side-effect:
-# selects the focussed machine
+# Update the focussed properties on all machines. A machine is focussed (`1`) if
+# its Z position is the highest, so in other words: it's on top. Otherwise, it
+# is `0`. Purposeful side-effect: this routine selects the focussed machine.
 : update-focussed
     # Find window with highest Z position that's running
     current-machine := 0
@@ -201,7 +205,6 @@
     loop
         while current-machine != v4
         select-machine
-        current-machine += 1
         point-to FOCUSSED
         v0 := 0
         save v0
@@ -213,9 +216,9 @@
             if v0 > v3 begin
                 v3 := v0
                 v2 := current-machine
-                v2 -= 1
             end
         end
+        current-machine += 1
     again
     current-machine := v2
     select-machine
@@ -223,6 +226,69 @@
     v0 := 1
     save v0
     return
+
+: swap-with-below
+    update-focussed
+    v5 := current-machine
+    v6 := current-machine
+    point-to WINDOW_POSITION_Z
+    load vD - vD
+    v7 := vD
+    v3 := v9
+    loop
+        while v3 > vD
+        v3 -= vD
+    again
+    # Find v9th window below me
+    v2 := 1
+    loop
+        while vD != 255
+        while v3 != 0
+        loop
+            vD -= 1
+            while vD != 255
+            find-z-position
+            if v2 == 1 then
+        again
+        v3 -= 1
+    again
+
+    # I'm the only window :(
+    if v2 == 1 then return
+
+    # We've found and selected a window below me.
+    # Swap Z position with that window.
+    point-to WINDOW_POSITION_Z
+    load v8 - v8
+    save v7 - v7
+    current-machine := v5
+    select-machine
+    point-to WINDOW_POSITION_Z
+    save v8 - v8
+
+    return
+
+: alt-tab
+    v9 := 0
+    loop
+        # If A released, we're done
+        v0 := 0xA
+        if v0 -key begin
+            update-focussed
+            return
+        end
+        # If 1 pressed, cycle through windows
+        v0 := 1
+        if v0 key begin
+            v9 += 1
+            swap-with-below
+            # Wait for release
+            v0 := 1
+            loop
+                if v0 key then
+            again
+        end
+    again
 
 : reset-focussed
     update-focussed
