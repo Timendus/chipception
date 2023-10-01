@@ -3,31 +3,6 @@
 Because CHIP-8 interpreters have been written in *every* programming language,
 except in CHIP-8 itself. Until now! 😄
 
-## TODO list
-
-### Compatibility / compliance
-
-* Key test: not released
-* Framerate test doesn't clear screen (and doesn't run as fast as it should..?)
-* Virtual displays
-  * disp wait quirk not working
-  * Wrapping (CLIP_QUIRK off) is broken horizontally
-  * `scroll` opcodes
-  * `lores` and `hires` opcodes -> what to do?
-    * `hires` buffers can't be in RAM like it is now
-
-### Features
-
-* Memory management:
-  * indexed "array" instead of indirect pointers
-  * being able to "allocate" and "free" a block
-* Keypad focus management & `Alt + Tab`
-* Allow selecting interpreter settings in menu
-* Add a program launcher
-* Show interpreter internals in overlay on plane 2?
-* Support CBF files
-* Can also have "native" programs, that use specific opcodes to have different resolutions or communicate with each other. Could be cool.
-
 # Development log
 
 ## Wait but why..?
