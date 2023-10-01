@@ -1,2 +1,4 @@
 chiplet
 .DS_Store
+roms
+node_modules

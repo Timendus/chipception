@@ -2,7 +2,12 @@
     "name": "Chipception",
     "scripts": {
         "copy": "../../chiplet/build/bin/chiplet src/main.8o -P | pbcopy",
+        "octopus": "octopus src/main.8o dist/chipception.8o && cat dist/chipception.8o | pbcopy",
         "assemble": "../../chiplet/build/bin/chiplet src/main.8o -o dist/chipception.ch8",
         "start": "npm run copy && npm run assemble"
+    },
+    "devDependencies": {
+        "@chipcode/fonts": "^0.1.2",
+        "@chipcode/octopus": "file:../chipcode/octopus"
     }
 }
