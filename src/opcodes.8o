@@ -126,10 +126,16 @@
     return
 
 : skip-key-pressed
+    point-to FOCUSSED
+    load v0
+    if v0 != 1 then return
     if vX key then jump skip-next-opcode
     return
 
 : skip-key-released
+    point-to FOCUSSED
+    load v0
+    if v0 != 1 then jump skip-next-opcode
     if vX -key then jump skip-next-opcode
     return
 
@@ -151,6 +157,9 @@
 
 # Wait for key and return in register X
 : get-key
+    point-to FOCUSSED
+    load v0
+    if v0 != 1 then jump step-back-one-opcode
     v0 := 0
     loop
         if v0 key begin
