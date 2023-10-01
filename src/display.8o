@@ -1,9 +1,7 @@
 # Show the contents of the display buffer on the screen.
 # Takes ~425 cycles to execute.
-: display-copy-values
-    0 0 15 30 45 60 4 15
 : display-copy
-    i := display-copy-values
+    i := long display-copy-values
     load v7
     i := long display-buffer
 
@@ -35,12 +33,14 @@
 
     return
 
+:segment data
+: display-copy-values
+    0 0 15 30 45 60 4 15
+:segment code
+
 # Clear the display buffer. Takes 147 cycles to execute.
-: display-clear-values
-    0 0 0 0 0 0 0 0
-    0 0 0 0 0 0 0 0
 : display-clear
-    i := display-clear-values
+    i := long display-clear-values
     load vD
     i := long display-buffer
     display-clear-224
@@ -55,6 +55,12 @@
     save v7 save v7
     save v7 save v7
     return
+
+:segment data
+: display-clear-values
+    0 0 0 0 0 0 0 0
+    0 0 0 0 0 0 0 0
+:segment code
 
 : display-clear-224
     # Writing 16 x 14 = 224 bytes
