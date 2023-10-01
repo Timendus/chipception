@@ -106,36 +106,7 @@
         again
         buzzer := vD
 
-        # Composite the display
-        display-clear
-        vD := 0
-        loop
-            # Find the interpreter at this depth
-            find-z-position
-            while v2 == 0
-            # Render this CPUs display
-            point-to WINDOW_POSITION
-            load v0 - v1
-            v0 -= 1
-            v1 -= 7
-            v2 := 66
-            v3 := 40
-            point-to FOCUSSED
-            load v4 - v4
-            vC := 0xFF
-            if v4 == 1 then vC := 0
-            draw-box
-            draw-header
-            point-to WINDOW_POSITION
-            load v2 - v3
-            vF := DISPLAY_BUFFER
-            unpack-pointer
-            v4 := 8             # TODO: hires
-            v5 := 32
-            blit-to-display
-            vD += 1
-        again
-        display-copy
+        composite-display
 
         # Wait to sync up with reality
         loop
@@ -168,6 +139,38 @@
             # if v0 key then ...
         end
     again
+
+# Rerender the screen
+: composite-display
+    display-clear
+    vD := 0
+    loop
+        # Find the interpreter at this depth
+        find-z-position
+        while v2 == 0
+        # Render this CPUs display
+        point-to WINDOW_POSITION
+        load v0 - v1
+        v0 -= 1
+        v1 -= 7
+        v2 := 66
+        v3 := 40
+        point-to FOCUSSED
+        load v4 - v4
+        vC := 0xFF
+        if v4 == 1 then vC := 0
+        draw-box
+        draw-header
+        point-to WINDOW_POSITION
+        load v2 - v3
+        vF := DISPLAY_BUFFER
+        unpack-pointer
+        v4 := 8             # TODO: hires
+        v5 := 32
+        blit-to-display
+        vD += 1
+    again
+    jump display-copy
 
 # Find the machine that is at the given z-position.
 # Input: vD is desired z-position
@@ -269,7 +272,10 @@
     return
 
 : alt-tab
-    v9 := 0
+    # We don't have any safe registers left, so store Alt-Tab distance in RAM
+    v0 := 0
+    i := long alt-tab-store
+    save v0
     loop
         # If A released, we're done
         v0 := 0xA
@@ -280,8 +286,13 @@
         # If 1 pressed, cycle through windows
         v0 := 1
         if v0 key begin
+            i := long alt-tab-store
+            load v9 - v9
             v9 += 1
+            save v9 - v9
             swap-with-below
+            update-focussed
+            composite-display
             # Wait for release
             v0 := 1
             loop
@@ -289,6 +300,10 @@
             again
         end
     again
+:segment data
+: alt-tab-store
+    0
+:segment code
 
 : reset-focussed
     update-focussed
