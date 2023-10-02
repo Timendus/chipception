@@ -1,7 +1,9 @@
 # Chipception
 
-Because CHIP-8 interpreters have been written in *every* programming language,
-except in CHIP-8 itself. Until now! 😄
+CHIP-8 interpreters have been written in *every* programming language... except in
+CHIP-8 itself.
+
+Until now! 😄
 
 # Development log
 
