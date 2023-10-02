@@ -172,3 +172,144 @@ now all of a sudden 8ception could do this:
 
 This is still just a single CHIP-8 ROM running in Octo, with a custom colour
 scheme. This is starting to go somewhere!
+
+## Managing windows
+
+Now that I had all these cute little windows into CHIP-8 programs, I felt it was
+time to make them interactive. I started by introducing the concept of a
+"focussed window". The windows were given an ordering so they could behave like
+a stack, like people are used to on their regular computers. The window "on top"
+is then considered to be "focussed". Inspired by my concept art, I made the
+focussed foreground window blue and the other windows orange.
+
+Now that there is one window that's clearly "active", we can do fun things with
+that. The most important thing: the interpreter in the focussed window gets
+keypresses, and the others do not. So by switching the focussed window, you also
+change which program you're interacting with as a user.
+
+Speaking of switching windows, I implemented a crude "Alt-Tab" functionality to
+cycle through the windows on the screen. The CHIP-8 key `A` (mapped to `Z` on a
+Qwerty keyboard), being in the bottom left corner of the keypad, became a sort
+of "function key" for interacting with Chipception, instead of the currently
+focussed ROM.
+
+These are the key combos I wrote to begin with:
+
+| CHIP-8 keys | Qwerty keys | Function                               |
+| ----------- | ----------- | -------------------------------------- |
+| `A` - `1`   | `Z` - `1`   | Switch windows ("Alt-Tab")             |
+| `A` - `4`   | `Z` - `Q`   | <ins>Q</ins>uit focussed interpreter   |
+| `A` - `D`   | `Z` - `R`   | <ins>R</ins>eset focussed interpreter  |
+| `A` - `5`   | `Z` - `W`   | Move focussed <ins>w</ins>indow around |
+
+Moving windows around is done with either WASD or the cursor keys on a
+computer keyboard, or `5`, `7`, `8` and `9` on a CHIP-8 keypad. Pressing our
+function key `A` / `Z` again returns the system into normal mode.
+
+Admittedly, the combinations make a lot more sense on a Qwerty keyboard than on
+a CHIP-8 keypad. See underlined letters. But I wanted to use combinations that I
+could actually remember 😅
+
+So now I could switch between CHIP-8 windows, move them around and interact with
+the CHIP-8 ROMs running in them 🎉
+
+![Managing windows in Chipception](./pictures/window-management.gif)
+
+## Running out of space
+
+Unfortunately, at this point I ran into my arch nemesis. Space constraints.
+
+Last year I battled this foe with [Bad Apple!! in
+XO-CHIP](https://github.com/Timendus/chip-8-bad-apple) and the year before with
+[3D VIP'r Maze](https://github.com/Timendus/3d-vipr-maze) for the original
+Cosmac VIP interpreter. For Bad Apple the challenge was fitting the whole music
+video, both video frames and sound, into the total XO-CHIP memory size of 64KB.
+With 3D VIP'r Maze the challenge was fitting the game and its graphics and game
+data in the lousy 3.2KB of memory that the VIP interpreter allows for ROMs to
+be.
+
+This year, truth be told, I really wasn't expecting to run into any significant
+memory issues. This is an XO-CHIP project. I wasn't doing anything stupid like
+trying to compress a music video down to an insanely small size. I only have a
+few ROMs to load, I need some free memory to manage and I have the code for
+Chipception itself. If it doesn't fit, I just include fewer ROMs. What could go
+wrong?
+
+Well, after just a couple of days of actual development, I hit the dreaded 3.5KB
+executable code limit. It turns out that after four years of this stuff I got
+pretty fast at writing lots of CHIP-8 assembly code...
+
+### What's the 3.5KB executable limit?
+
+CHIP-8 ROMs can be as big as you like. You can append bytes to infinity. The
+problem isn't making the ROM bigger, it's being able to make use of your bytes.
+
+CHIP-8 has something known as the index register. The index register is used to
+point at memory and then perform operations with the memory being pointed at.
+The index register is set using a 16-bit opcode that looks like this in
+hexadecimal:
+
+* `0xAnnn`
+
+The `nnn` here is a placeholder for the address we want the index register to
+point at. And `nnn` is 12 bits wide. So CHIP-8 can only address 2 to the power
+of 12 bytes, which is 4KB. Subtract from that the fact that CHIP-8 programs
+start at memory address `512`, and we're left with a maximum adressable ROM size
+of 3.5KB. Anything above that we simply can't point to to make use of it.
+
+The same applies to the opcodes for jumping and calling subroutines, which look
+like this respectively:
+
+* `0x1nnn`
+* `0x2nnn`
+
+Here `nnn` is a placeholder for the address we want to jump to or call into. So
+just like with setting the index register, we can't go anywhere that's outside
+the 3.5KB boundary.
+
+[XO-CHIP](https://github.com/JohnEarnest/Octo/blob/gh-pages/docs/XO-ChipSpecification.md)
+adds a double sized opcode (`0xF000 0xnnnn`) that can set the index register to
+a 16-bit value, allowing us to address 2 to the power of 16, which is 64KB.
+Minus the same 512 bytes, but that's not as big of a deal at that scale. But
+XO-CHIP does not give us 16-bit jumps or subroutine calls. Which creates the
+interesting situation where we can have plenty of space left "in the ROM", but
+we can only use that space for storing data. Not for storing code.
+
+That's the 3.5KB executable limit.
+
+The sharp observers among you are now probably screaming two things at your
+screens:
+
+1. Just move your data to higher addresses, so you can make maximum use of those
+   3.5K for code!
+2. If you can't jump above the 3.5K limit, you can still run code there. How
+   about you just unroll some loops or something and make your code go on
+   forever!
+
+To the first, I say: I'm already doing just that. One of the main reasons that I
+wrote my [Octopus
+preprocessor](https://github.com/Timendus/chipcode/tree/main/octopus) is that I
+wanted to have an easy way to mark part of my CHIP-8 program as data, and have
+it automatically moved to the end of the ROM. That's working wonders. So yes, I
+have actually writting 3.5KB of executing code.
+
+To the second: that sounds great, but without jumping we basically lose any
+meaningful flow control in CHIP-8. Because all the conditional opcodes only jump
+over a single instruction, and in many cases you really need that single
+instruction to be a jump (over a longer block of code). You could jump over
+subroutine calls and store the subroutines below the 3.5KB limit, but in
+practice that doesn't buy you much.
+
+(Also, it's quite possible that some XO-CHIP interpreters don't support
+returning from a subroutine to an address that's more than 12 bits either,
+depending on how they implemented their stack.)
+
+In all honesty, I'm not 100% convinced that CHIP-8 without jumps or subroutines
+is even Turing-complete...
+
+### So now what?
+
+Time to optimize. Already.
+
+I made a quick list of five areas in the code where I could start looking for
+optimizations, and got to work.
