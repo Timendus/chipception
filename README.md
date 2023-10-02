@@ -5,6 +5,8 @@ CHIP-8 itself.
 
 Until now! 😄
 
+![Yo dawg, heard you like CHIP-8. So I put CHIP-8 in ur CHIP-8](./pictures/meme.jpg)
+
 # Development log
 
 ## Wait but why..?
@@ -41,14 +43,15 @@ sense for them to model a "CHIP-8 OS" on a PDA-type device, since you can't
 really "download" or "install" new programs into a running CHIP-8 interpreter.
 PDAs used to come with a fixed set of "applications" like a calendar or a
 calculator that were just baked into the ROM of the device, each just running
-directly on the hardware and taking over full control of the CPU. However, when
-I dream about a "CHIP-8 OS", I think about something that resembles the early
-Unixes, that can run programs in "user mode", with a "kernel" that can do
-"scheduling" or kill misbehaving programs and maybe some way for programs to
-communicate with each other.
+directly on the hardware and taking over full control of the CPU.
+
+However, when I dream about a "CHIP-8 OS", I think about something that
+resembles the early Unixes, that can run programs in "user mode", with a
+"kernel" that can do "scheduling" or kill misbehaving programs and maybe some
+way for programs to communicate with each other.
 
 So maybe, just maybe, starting with a CHIP-8 interpreter in CHIP-8 is the first
-step in the journey towards a true CHIP-8 operating system. One that runs CHIP-8
+step on the journey towards a true CHIP-8 operating system. One that runs CHIP-8
 programs, that you can switch between or run in parallel. Maybe a few custom
 opcodes could allow for the program to communicate with the host OS or other
 programs?
@@ -168,7 +171,7 @@ Yeah. So that took me way longer than I care to admit. I put the project down
 for a couple of days, just because I was too annoyed I couldn't get the damn
 routine to draw a bloody horizontal line 😂 But after taking a few breaths and
 a couple of days off, I managed to produce some primitive drawing routines and
-now all of a sudden 8ception could do this:
+now all of a sudden Chipception could do this:
 
 ![Running multiple interpreters in windows with borders](./pictures/bordered-windows.gif)
 
@@ -293,7 +296,7 @@ wrote my [Octopus
 preprocessor](https://github.com/Timendus/chipcode/tree/main/octopus) is that I
 wanted to have an easy way to mark part of my CHIP-8 program as data, and have
 it automatically moved to the end of the ROM. That's working wonders. So yes, I
-have actually writting 3.5KB of executing code.
+have actually written 3.5KB of executing code.
 
 To the second: that sounds great, but without jumping we basically lose any
 meaningful flow control in CHIP-8. Because all the conditional opcodes only jump
