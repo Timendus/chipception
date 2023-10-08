@@ -314,7 +314,35 @@ is even Turing-complete...
 
 ### So now what?
 
-Time to optimize. Already.
+Time to optimize. Already. For every feature I add from now on, I will also have
+to cut some dead weight.
 
-I made a quick list of five areas in the code where I could start looking for
-optimizations, and got to work.
+## Looks matter
+
+One thing I remembered was that I already added code to show a background image,
+but I couldn't get my background image data in memory in the right format. So
+until now I was clearing the screen, for which I had also added a separate
+routine. If I fixed my background data format, I could remove the screen
+clearing code.
+
+So I manually created the right background image layers in the GIMP to import
+into my project with the [Chipcode image loader
+plugin](https://github.com/Timendus/chipcode/tree/main/image-loader).
+
+![Background layer one](./pictures/background-layer1.png)
+![Background layer two](./pictures/background-layer2.png)
+
+Next I had to add an 8 by 64 pixels mode to the image loader, which it turns out
+Gulrak's excellent Chiplet assembler already supported too. I then also wanted
+to fix some annoyances with the window shadows, so that the windows stick out
+enough from the background. Just like in my graphical mockup.
+
+And voila! I added a feature while also throwing out a routine that I didn't
+need anymore!
+
+![Windows with background](./pictures/now-with-background.png)
+
+Compare that to the mock-up I made at the start of this project! I'm quite
+amazed that I've come this far already 😄
+
+![The mock-up I made earlier, once again](./pictures/concept1-large.png)
