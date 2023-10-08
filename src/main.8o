@@ -130,6 +130,10 @@
             v0 := 4
             if v0 key then close-focussed
 
+            # Z + W -> Move window
+            v0 := 5
+            if v0 key then move-focussed
+
             # Z + F -> Go full screen
             # v0 := 0xE
             # if v0 key then ...
@@ -309,6 +313,45 @@
     update-focussed
     reset
     jump wait-release
+
+: move-focussed
+    wait-release
+    loop
+        # Move focussed window around
+        update-focussed
+        point-to WINDOW_POSITION
+        load v0 - v1
+        if v1 != 7 begin
+            v2 := 5
+            if v2 key then v1 -= 1
+        end
+        if v0 != 1 begin
+            v2 := 7
+            if v2 key then v0 -= 1
+        end
+        if v1 != 31 begin
+            v2 := 8
+            if v2 key then v1 += 1
+        end
+        if v0 != 63 begin
+            v2 := 9
+            if v2 key then v0 += 1
+        end
+        save v0 - v1
+        composite-display
+
+        # Limit movement to one pixel per frame
+        v0 := 1
+        delay := v0
+        loop
+            v0 := delay
+            if v0 != 0 then
+        again
+
+        # Exit movement code by pressing Z
+        v0 := 0xA
+        if v0 key then return
+    again
 
 : close-focussed
     update-focussed
