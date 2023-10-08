@@ -1,0 +1,11 @@
+:segment data
+
+# Colours:
+#  00 - Dark gray
+#  10 - White
+#  01 - Blue
+#  11 - Orange
+
+: background-image
+  :include "../pictures/background-layer1.png" 8x64 no-labels
+  :include "../pictures/background-layer2.png" 8x64 no-labels

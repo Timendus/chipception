@@ -146,7 +146,8 @@
 
 # Rerender the screen
 : composite-display
-    display-clear
+    :unpack long background-image
+    display-overwrite
     vD := 0
     loop
         # Find the interpreter at this depth
