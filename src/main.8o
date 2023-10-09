@@ -485,6 +485,7 @@
 :include "gui.8o"
 :include "fonts.8o"
 :include "roms.8o"
+:include "background.8o"
 
 : free-memory
     # Starts here
