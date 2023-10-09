@@ -38,7 +38,7 @@
     # Initialize the booting programs
     :alias unpack-hi v3
     :alias unpack-lo v4
-    :unpack long rom-space-invaders
+    :unpack long launcher
     start-program
 
     :alias unpack-hi v0

@@ -4,7 +4,8 @@
         "copy": "../../chiplet/build/bin/chiplet src/main.8o -P | pbcopy",
         "octopus": "octopus src/main.8o dist/chipception.8o && cat dist/chipception.8o | pbcopy",
         "assemble": "../../chiplet/build/bin/chiplet src/main.8o -o dist/chipception.ch8",
-        "start": "npm run copy && npm run assemble"
+        "start": "npm run launcher && npm run copy && npm run assemble",
+        "launcher": "../../chiplet/build/bin/chiplet src/launcher.8o -o roms/launcher.ch8"
     },
     "devDependencies": {
         "@chipcode/fonts": "^0.1.2",
