@@ -346,3 +346,68 @@ Compare that to the mock-up I made at the start of this project! I'm quite
 amazed that I've come this far already 😄
 
 ![The mock-up I made earlier, once again](./pictures/concept1-large.png)
+
+I may however change the looks of the shadows a bit. After some feedback from
+the #chip-8 channel on the EmuDev Discord I was not entirely convinced that this
+is the best looking option. Here are some alternatives I drew:
+
+![One alternative](./pictures/different-shadows-1.png)
+
+![Another alternative](./pictures/different-shadows-2.png)
+
+We'll see what we end up with!
+
+## Launching programs
+
+If the idea is for this thing to be a "CHIP-8 operating system", then we should
+at the very least be able to launch programs. But I was almost out of executable
+memory, so writing a start menu or another graphical program launcher was out of
+the question.
+
+Lucky for me, I was already considering having "Chipception programs" that could
+achieve some Chipception specific things with custom opcodes. So I quite quickly
+realised that I didn't really need a whole interface in my executable space, all
+I **really** needed was an opcode for launching a new program. Then I could
+write a ROM that would actually be the interactive interface for the user.
+
+One of the hardest things to figure out was how the launcher ROM could know
+which ROMs are available to Chipception. I all honestly, I still haven't really
+come up with an elegant way. But when loading a ROM, Chipception just copies
+from the starting address of the ROM all the way until the memory of the
+virtualized interpreter is full. That means that any data *after* the launcher
+ROM is also copied into the launcher's memory, and is accessible to the ROM.
+
+```python
+: launcher
+    :byte SUPERCHIP
+    :include "../roms/launcher.ch8"
+
+: rom-table
+    3   # Number of ROMs
+
+    :pointer rom-3d-vipr-maze
+    0b00001100
+    0b00011010
+    0b00111110
+    0b00111000
+    0b00011100
+    0b00001100
+    0b01011100
+    0b00111000
+    str "3D VIP'r Maze" str-end
+
+    # ...
+```
+
+It's not pretty, but by having a table with information on the available ROMs
+and their starting addresses loaded right after the launcher ROM, we can show
+the user which ROMs Chipception has available with a name and an icon, and the
+launcher ROM can start the selected program by invoking the new opcode.
+
+![The launcher ROM in action](./pictures/launcher.png)
+
+This also meant that my old launcher code, that just launched several
+interpreters with fixed settings and ROMs, could be slimmed down to a single
+subroutine. So we once again actually saved executable memory space while adding
+a new feature!
+
