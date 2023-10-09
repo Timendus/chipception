@@ -36,12 +36,13 @@
     pitch := v0
 
     # Initialize the booting programs
-    # init 3 10 10 CHIP8     rom-clip-test
-    # reset-quirk CLIP_QUIRK
-    init 1 38  8 SUPERCHIP rom-space-invaders
-    init 2  5 22 CHIP8     rom-christmas
-    init 0 60 29 VIP       rom-flags
+    :alias unpack-hi v3
+    :alias unpack-lo v4
+    :unpack long rom-space-invaders
+    start-program
 
+    :alias unpack-hi v0
+    :alias unpack-lo v1
     update-focussed
 
     # Run forever
@@ -143,6 +144,41 @@
             # if v0 key then ...
         end
     again
+
+# Input: v3, v4 point to one of the ROM labels
+: start-program
+    # Find machine number and increase total
+    i := long current-number-of-machines
+    load v2 - v2
+    current-machine := v2
+    v2 += 1
+    save v2 - v2
+
+    # Extract quirks
+    i := start-program-smc
+    save v3 - v4
+    0xF0 0x00   # i := long ...
+    : start-program-smc
+    0x00 0x00
+    load v5 - v5
+
+    # Save start of ROM and quirks
+    vF := 1
+    v4 += vF
+    v3 += vF
+    select-machine
+    point-to ROM
+    save v3 - v4
+    set-quirks v5
+
+    # Position window
+    point-to WINDOW_POSITION_Z
+    save current-machine - current-machine
+    set8 WINDOW_POSITION_X 32
+    set8 WINDOW_POSITION_Y 16
+
+    # Launch this machine
+    jump reset
 
 # Rerender the screen
 : composite-display

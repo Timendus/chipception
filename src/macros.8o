@@ -37,29 +37,6 @@
     v0 += 0
 }
 
-# Initializing interpreters
-
-:macro init MACHINE XPOS YPOS CHOSEN-QUIRKS MY_ROM {
-    i := long current-number-of-machines
-    load v2 - v2
-    v2 += 1
-    save v2 - v2
-    current-machine := MACHINE
-    select-machine
-    :alias unpack-hi v0
-    :alias unpack-lo v1
-    :unpack long MY_ROM
-    point-to ROM
-    save v1
-    point-to WINDOW_POSITION_Z
-    v2 -= 1
-    save v2 - v2
-    set8 WINDOW_POSITION_X XPOS
-    set8 WINDOW_POSITION_Y YPOS
-    set-quirks CHOSEN-QUIRKS
-    reset
-}
-
 # Helpers for setting values in memory
 
 :macro make16 REGa REGb WORD {

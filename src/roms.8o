@@ -1,17 +1,57 @@
 :segment data
 
-: rom-logo
-    :include "../roms/logo.ch8"
-
-: rom-test-suite
-    :include "../roms/chip8-test-suite.ch8"
-
-: rom-ibm
-    :include "../roms/ibm.ch8"
-
 : rom-3d-vipr-maze
+    :byte SUPERCHIP
     :include "../roms/3dviprmaze-schip.ch8"
 
-: rom-clip-test
-    :include "../roms/sprite-clip-test.ch8"
+: rom-pong
+    :byte CHIP8
+    :include "../roms/pong2.ch8"
 
+: rom-ant
+    :byte SUPERCHIP
+    :include "../roms/ant.ch8"
+
+: rom-snake
+    :byte CHIP8
+    :include "../roms/snake.ch8"
+
+: rom-space-invaders
+    :byte SUPERCHIP
+    :include "../roms/Space Invaders [David Winter].ch8"
+
+: rom-christmas
+    :byte CHIP8
+    :include "../roms/christmas.ch8"
+
+: rom-sierpinski
+    :byte CHIP8
+    :include "../roms/sierpinski.ch8"
+
+: rom-test-suite
+    :byte CHIP8
+    :include "../roms/chip8-test-suite.ch8"
+
+: rom-logo
+    :byte CHIP8
+    :include "../roms/logo.ch8"
+
+: rom-ibm
+    :byte CHIP8
+    :include "../roms/ibm.ch8"
+
+: rom-corax
+    :byte CHIP8
+    :include "../roms/3-corax+.ch8"
+
+: rom-flags
+    :byte CHIP8
+    :include "../roms/4-flags.ch8"
+
+: rom-quirks
+    :byte VIP
+    :include "../roms/5-quirks.ch8"
+
+: rom-keypad
+    :byte CHIP8
+    :include "../roms/6-keypad.ch8"
