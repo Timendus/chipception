@@ -160,6 +160,8 @@
     point-to FOCUSSED
     load v0
     if v0 != 1 then jump step-back-one-opcode
+    point-to REGISTERS
+    i += second-nibble
     v0 := 0
     loop
         if v0 key begin
