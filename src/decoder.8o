@@ -174,7 +174,7 @@
     jump0 jump-table-F0N5
 
 : jump-table-F0N5
-    jump unknown-opcode     # 0x0
+    jump launch-program     # 0x0
     jump write-delay        # 0x1
     jump unknown-opcode     # 0x2
     jump unknown-opcode     # 0x3

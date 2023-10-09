@@ -429,6 +429,13 @@
     again
     return
 
+## Special Chipception opcode
+
+: launch-program
+    point-to REGISTERS
+    load v3 - v4
+    jump start-program
+
 ## Display manipulation
 
 : clear-screen

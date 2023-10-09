@@ -2,6 +2,11 @@
 :const FONTLIB-NOWRAP 1
 :include "text/font-header.8o"
 
+:macro launch {
+	:byte 0xF0
+	:byte 0x05
+}
+
 : main
 	setFont font-5-pix-narrow
 
@@ -13,7 +18,7 @@
 	loop
 		clear
 		vB := 0    # Start item for render
-		vC := 1    # Y coordinate of start item
+		vC := 2    # Y coordinate of start item
 
 		# Render the items that fit on screen
 		loop
@@ -35,8 +40,11 @@
 			if vD != 0 then vD -= 1
 		end
 		if v0 == 8 begin
+			vA -= 1
 			if vD != vA then vD += 1
+			vA += 1
 		end
+		if v0 == 6 then launch-program
 
 		# Wait for key release
 : main-key-wait-loop
@@ -51,7 +59,7 @@
 : find-program
 	i := rom-table
 	:alias unpack-hi v3
-    :alias unpack-lo v4
+	:alias unpack-lo v4
 	:unpack 0xA rom-table
 	vF := 1
 	i += vF
@@ -166,6 +174,13 @@
 	sprite v0 v1 8
 	return
 
+# Launch selected program, index is in vD
+: launch-program
+	v2 := vD
+	find-program
+	load v1
+	launch
+	return
 
 :include "text/font-library.8o"
 :include "text/font-5-pix-narrow.8o"
