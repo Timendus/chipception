@@ -49,7 +49,7 @@
     :include "../roms/3dviprmaze-schip.ch8"
 
 : rom-pong
-    :byte CHIP8
+    :byte VIP
     :include "../roms/pong2.ch8"
 
 : rom-ant
