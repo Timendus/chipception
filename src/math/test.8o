@@ -1,0 +1,55 @@
+:include "macros.8o"
+
+:macro expect REG VAL ERR {
+  if REG != VAL then
+    :breakpoint ERR
+    loop again  # Give breakpoint something to stop on and don't show "pass"
+}
+
+: main
+  # Test 50/3 = 16
+  v0 := 50
+  v1 := 3
+  div-8-8 v0 v1 v2 v3 v4
+  expect v0 16 "Expected div-8-8 50/3 to result in 16"
+  expect v2 2 "Expected div-8-8 50/3 to have remainder 2"
+
+  # Test 50/3 = 16
+  v0 := 0
+  v1 := 50
+  v2 := 3
+  div-16-8 v0 v1 v2 v3 v4 v5
+  expect v1 16 "Expected div-16-8 50/3 to result in 16"
+  expect v3 2 "Expected div-16-8 50/3 to have remainder 2"
+
+  # Test 3453 / 130 = 26
+  v0 := 0x0D
+  v1 := 0x7D
+  v2 := 130
+  div-16-8 v0 v1 v2 v3 v4 v5
+  expect v1 26 "Expected div-16-8 3453/130 to result in 26"
+  expect v3 73 "Expected div-16-8 3453/130 to have remainder 73"
+
+  # Text 10 * 17 = 170
+  v0 := 10
+  v1 := 17
+  mul-8-8 v0 v1 v2 v3 v4
+  expect v2 0 "Expected mul-8-8 to not overflow 8 bits"
+  expect v3 170 "Expected mul-8-8 to result in 170"
+
+  # Text 193 * 238 = 45934
+  v0 := 193
+  v1 := 238
+  mul-8-8 v0 v1 v2 v3 v4
+  expect v2 0xB3 "Expected mul-8-8 to result in 45934"
+  expect v3 0x6E "Expected mul-8-8 to result in 45934"
+
+  # All tests passed!
+  v0 := 24
+  v1 := 8
+  i := pass
+  sprite v0 v1 0
+  loop again
+
+: pass
+  :include "../../pictures/pass.png" 16x16 no-labels

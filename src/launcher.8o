@@ -1,6 +1,7 @@
 :const SUPERCHIP 1
 :const FONTLIB-NOWRAP 1
 :include "text/font-header.8o"
+:include "math/macros.8o"
 
 :macro launch {
 	:byte 0xF0
@@ -8,7 +9,7 @@
 }
 
 : main
-	setFont font-5-pix-narrow
+	setFont font-4-pix-low
 
 	i := rom-table
 	load v0
@@ -125,8 +126,8 @@
 	again
 	return
 
-# Draw the scrollbar at proportion "vD / (vA + 1)"
-# Destroys: v0 - v3
+# Draw the scrollbar at proportion "vD / vA"
+# Destroys: v0 - v8
 : render-scrollbar
 	i := scrollbar-line
 	v0 := 60
@@ -136,42 +137,17 @@
 		sprite v0 v1 8
 		v1 += 8
 	again
+
 	v1 := vD
-	v2 := 0
-	v3 := vA
-	v3 += 1
+	v2 := 24
+	mul-8-8 v1 v2 v3 v4 v5 			# [v3, v4] = v1 * v2
 
-	# v2, v1 = vD * 32
-	v1 <<= v1
-	v2 += vF
-	v1 <<= v1
-	v2 += vF
-	v1 <<= v1
-	v2 += vF
-	v1 <<= v1
-	v2 += vF
-	v1 <<= v1
-	v2 += vF
-
-	# v1 = v2, v1 / (vA + 1)
-	v4 := 8
-	v5 := 0
-	loop
-		while v4 != 0
-		v4 -= 1
-		v2 <<= v2
-		v1 <<= v1
-		v2 |= vF
-		v1 |= v5
-		v5 := 0
-		if v2 > v3 begin
-			v2 -= v3
-			v5 := 1
-		end
-	again
+	v5 := vA
+	v5 -= 1
+	div-16-8 v3 v4 v5 v6 v7 v8		# v4 = [v3, v4] / v5
 
 	i := scrollbar-handle
-	sprite v0 v1 8
+	sprite v0 v4 8
 	return
 
 # Launch selected program, index is in vD
@@ -183,7 +159,7 @@
 	return
 
 :include "text/font-library.8o"
-:include "text/font-5-pix-narrow.8o"
+:include "text/font-4-pix-low.8o"
 
 :segment data
 

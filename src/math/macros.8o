@@ -1,0 +1,89 @@
+# Divide 16-bit value by 8-bit value, resulting in 8-bit result
+# numerator-low = [numerator-high, numerator-low] / divisor
+# remainder = [numerator-high, numerator-low] % divisor
+:macro div-16-8 numerator-high numerator-low divisor remainder temp1 temp2 {
+  :alias num-high numerator-high
+  :alias num-low numerator-low
+  :alias result numerator-low
+  :alias div divisor
+  :alias rem remainder
+  :alias counter temp1
+  :alias flag temp2
+	counter := 16
+	flag := 0
+	remainder := 0
+	loop
+		while counter != 0
+		counter -= 1
+		remainder <<= remainder
+		numerator-high <<= numerator-high
+		remainder |= vF
+		numerator-low <<= numerator-low
+		numerator-high |= vF
+		numerator-low |= flag
+		flag := 0
+		if remainder >= divisor begin
+			remainder -= divisor
+			flag := 1
+		end
+	again
+  numerator-low <<= numerator-low
+  numerator-low |= flag
+}
+
+# Divide 8-bit value by 8-bit value, resulting in 8-bit result
+# numerator = numerator / divisor
+# remainder = numerator % divisor
+:macro div-8-8 numerator divisor remainder temp1 temp2 {
+  :alias num numerator
+  :alias result numerator
+  :alias div divisor
+  :alias rem remainder
+  :alias counter temp1
+  :alias flag temp2
+	counter := 8
+	flag := 0
+	remainder := 0
+	loop
+		while counter != 0
+		counter -= 1
+		remainder <<= remainder
+		numerator <<= numerator
+    remainder |= vF
+		numerator |= flag
+		flag := 0
+		if remainder >= divisor begin
+			remainder -= divisor
+			flag := 1
+		end
+	again
+  numerator <<= numerator
+  numerator |= flag
+}
+
+# Multiply two 8-bit values, resulting in 16-bit result
+# [result-high, result-low] = multiplicand * multiplier
+:macro mul-8-8 multiplicand multiplier result-high result-low temp {
+  :alias multcand multiplicand
+  :alias multier multiplier
+  :alias res-high result-high
+  :alias res-low result-low
+  :alias tmp temp
+  result-high := 0
+  result-low := 0
+  temp := 0
+  if multiplicand != 0 begin
+    loop
+      while multiplier != 0
+      multiplier >>= multiplier
+      if vF == 1 begin
+        result-high += temp
+        result-low += multiplicand
+        result-high += vF
+      end
+      temp <<= temp
+      multiplicand <<= multiplicand
+      temp |= vF
+    again
+  end
+}
