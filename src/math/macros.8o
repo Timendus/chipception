@@ -2,11 +2,12 @@
 # numerator-low = [numerator-high, numerator-low] / divisor
 # remainder = [numerator-high, numerator-low] % divisor
 :macro div-16-8 numerator-high numerator-low divisor remainder temp1 temp2 {
-  :alias num-high numerator-high
-  :alias num-low numerator-low
-  :alias result numerator-low
-  :alias div divisor
-  :alias rem remainder
+  # Aliases for easy debugging:
+  # :alias num-high numerator-high
+  # :alias num-low numerator-low
+  # :alias result numerator-low
+  # :alias div divisor
+  # :alias rem remainder
   :alias counter temp1
   :alias flag temp2
 	counter := 16
@@ -35,10 +36,11 @@
 # numerator = numerator / divisor
 # remainder = numerator % divisor
 :macro div-8-8 numerator divisor remainder temp1 temp2 {
-  :alias num numerator
-  :alias result numerator
-  :alias div divisor
-  :alias rem remainder
+  # Aliases for easy debugging:
+  # :alias num numerator
+  # :alias result numerator
+  # :alias div divisor
+  # :alias rem remainder
   :alias counter temp1
   :alias flag temp2
 	counter := 8
@@ -64,11 +66,12 @@
 # Multiply two 8-bit values, resulting in 16-bit result
 # [result-high, result-low] = multiplicand * multiplier
 :macro mul-8-8 multiplicand multiplier result-high result-low temp {
-  :alias multcand multiplicand
-  :alias multier multiplier
-  :alias res-high result-high
-  :alias res-low result-low
-  :alias tmp temp
+  # Aliases for easy debugging:
+  # :alias multcand multiplicand
+  # :alias multier multiplier
+  # :alias res-high result-high
+  # :alias res-low result-low
+  # :alias tmp temp
   result-high := 0
   result-low := 0
   temp := 0
