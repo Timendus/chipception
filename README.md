@@ -333,19 +333,18 @@ plugin](https://github.com/Timendus/chipcode/tree/main/image-loader).
 ![Background layer two](./pictures/background-layer2.png)
 
 Next I had to add an 8 by 64 pixels mode to the image loader, which it turns out
-Gulrak's excellent Chiplet assembler already supported too. I then also wanted
-to fix some annoyances with the window shadows, so that the windows stick out
-enough from the background. Just like in my graphical mockup.
+Gulrak's excellent [Chiplet assembler](https://github.com/gulrak/chiplet)
+already supported too. I then also wanted to fix some annoyances with the window
+shadows, so that the windows stick out enough from the background. Just like in
+my graphical mockup.
 
 And voila! I added a feature while also throwing out a routine that I didn't
 need anymore!
 
 ![Windows with background](./pictures/now-with-background.png)
 
-Compare that to the mock-up I made at the start of this project! I'm quite
-amazed that I've come this far already 😄
-
-![The mock-up I made earlier, once again](./pictures/concept1-large.png)
+Compare that to the mock-up I made at the start of this project! I was quite
+amazed that I had come this far already 😄
 
 I may however change the looks of the shadows a bit. After some feedback from
 the #chip-8 channel on the EmuDev Discord I was not entirely convinced that this
@@ -371,7 +370,7 @@ I **really** needed was an opcode for launching a new program. Then I could
 write a ROM that would actually be the interactive interface for the user.
 
 One of the hardest things to figure out was how the launcher ROM could know
-which ROMs are available to Chipception. I all honestly, I still haven't really
+which ROMs are available to Chipception. In all honestly, I still haven't really
 come up with an elegant way. But when loading a ROM, Chipception just copies
 from the starting address of the ROM all the way until the memory of the
 virtualized interpreter is full. That means that any data *after* the launcher
