@@ -35,18 +35,8 @@
     v0 := 70
     pitch := v0
 
-    # Initialize the booting programs
-    :alias unpack-hi v3
-    :alias unpack-lo v4
-    :unpack long launcher
-    start-program
-    point-to WINDOW_POSITION
-    v0 := 32
-    v1 := 18
-    save v1
-
-    :alias unpack-hi v0
-    :alias unpack-lo v1
+    # Initialize the app launcher
+    start-launcher
 
     # Run forever
     loop
@@ -130,8 +120,8 @@
             v0 := 1
             if v0 key then alt-tab
 
-            # Z + Q -> Close program
-            v0 := 4
+            # Z + C -> Close program
+            v0 := 0xB
             if v0 key then close-focussed
 
             # Z + W -> Move window
@@ -142,11 +132,24 @@
             # v0 := 0xE
             # if v0 key then ...
 
-            # Z + X -> Open menu
-            # v0 := 0
-            # if v0 key then ...
+            # Z + S -> Open launcher
+            v0 := 8
+            if v0 key then start-launcher
         end
     again
+
+: start-launcher
+    :alias unpack-hi v3
+    :alias unpack-lo v4
+    :unpack long launcher
+    start-program
+    point-to WINDOW_POSITION
+    v0 := 32
+    v1 := 18
+    save v1
+    :alias unpack-hi v0
+    :alias unpack-lo v1
+    jump wait-release
 
 # Input: v3, v4 point to one of the ROM labels
 : start-program
@@ -349,10 +352,7 @@
     loop
         # If A released, we're done
         v0 := 0xA
-        if v0 -key begin
-            update-focussed
-            return
-        end
+        if v0 -key then return
         # If 1 pressed, cycle through windows
         v0 := 1
         if v0 key begin
