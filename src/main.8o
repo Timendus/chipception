@@ -40,10 +40,13 @@
     :alias unpack-lo v4
     :unpack long launcher
     start-program
+    point-to WINDOW_POSITION
+    v0 := 32
+    v1 := 18
+    save v1
 
     :alias unpack-hi v0
     :alias unpack-lo v1
-    update-focussed
 
     # Run forever
     loop
@@ -147,12 +150,28 @@
 
 # Input: v3, v4 point to one of the ROM labels
 : start-program
-    # Find machine number and increase total
+    # Find an unused machine or create a new machine
     i := long current-number-of-machines
     load v2 - v2
-    current-machine := v2
-    v2 += 1
-    save v2 - v2
+    current-machine := 0
+    loop
+        select-machine
+        point-to RUNNING
+        load v0
+        while v0 != STATE_STOPPED
+        while current-machine != v2
+        current-machine += 1
+    again
+    if current-machine == v2 begin
+        # Bail if we don't have the memory
+        if current-machine == MAX_MACHINES begin
+            update-focussed # restore current-machine
+            return
+        end
+        v2 += 1
+        i := long current-number-of-machines
+        save v2 - v2
+    end
 
     # Extract quirks
     i := start-program-smc
@@ -172,13 +191,20 @@
     set-quirks v5
 
     # Position window
-    point-to WINDOW_POSITION_Z
-    save current-machine - current-machine
-    set8 WINDOW_POSITION_X 32
-    set8 WINDOW_POSITION_Y 16
+    point-to WINDOW_POSITION
+    # X = number between 2 and 61
+    v0 := random 59
+    v0 += 2
+    # Y = number between 8 and 30
+    v1 := random 22
+    v1 += 8
+    # Z = just stack it on top(?)
+    v2 := current-machine
+    save v2
 
     # Launch this machine
-    jump reset
+    reset
+    jump update-focussed
 
 # Rerender the screen
 : composite-display
@@ -186,29 +212,33 @@
     display-overwrite
     vD := 0
     loop
+        i := long current-number-of-machines
+        load v0
+        while vD != v0
         # Find the interpreter at this depth
         find-z-position
-        while v2 == 0
-        # Render this CPUs display
-        point-to WINDOW_POSITION
-        load v0 - v1
-        v0 -= 1
-        v1 -= 7
-        v2 := 66
-        v3 := 40
-        point-to FOCUSSED
-        load v4 - v4
-        vC := 0xFF
-        if v4 == 1 then vC := 0
-        draw-box
-        draw-header
-        point-to WINDOW_POSITION
-        load v2 - v3
-        vF := DISPLAY_BUFFER
-        unpack-pointer
-        v4 := 8             # TODO: hires
-        v5 := 32
-        blit-to-display
+        if v2 == 0 begin
+            # Render this CPUs display
+            point-to WINDOW_POSITION
+            load v0 - v1
+            v0 -= 1
+            v1 -= 7
+            v2 := 66
+            v3 := 40
+            point-to FOCUSSED
+            load v4 - v4
+            vC := 0xFF
+            if v4 == 1 then vC := 0
+            draw-box
+            draw-header
+            point-to WINDOW_POSITION
+            load v2 - v3
+            vF := DISPLAY_BUFFER
+            unpack-pointer
+            v4 := 8             # TODO: hires
+            v5 := 32
+            blit-to-display
+        end
         vD += 1
     again
     jump display-copy
@@ -271,12 +301,14 @@
     save v0
     return
 
+# Swap focussed window with a window v9 levels down
 : swap-with-below
     update-focussed
     v5 := current-machine
     v6 := current-machine
     point-to WINDOW_POSITION_Z
     load vD - vD
+    if vD == 0 then return # I'm the "lowest" window :(
     v7 := vD
     v3 := v9
     loop
@@ -296,9 +328,6 @@
         again
         v3 -= 1
     again
-
-    # I'm the only window :(
-    if v2 == 1 then return
 
     # We've found and selected a window below me.
     # Swap Z position with that window.
@@ -392,9 +421,7 @@
 
 : close-focussed
     update-focussed
-    point-to RUNNING
-    v0 := STATE_STOPPED
-    save v0
+    set8 RUNNING STATE_STOPPED
     update-focussed
     # jump wait-release  # fall through
 
