@@ -207,7 +207,8 @@
 
     # Launch this machine
     reset
-    jump update-focussed
+    update-focussed
+    jump wait-release-all
 
 # Rerender the screen
 : composite-display
@@ -428,6 +429,14 @@
 : wait-release
     v0 := 0xA
     if v0 key then jump wait-release
+    return
+
+: wait-release-all
+    v0 := 0
+: wait-release-loop
+    if v0 key then jump wait-release-loop
+    v0 += 1
+    if v0 != 16 then jump wait-release-loop
     return
 
 # Lazily reset the interpreter
