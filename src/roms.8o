@@ -7,95 +7,69 @@
 
 
 : rom-table
-    # Number of ROMs
-    3
+    # Number of ROMs, max is currently 32
+    9
 
     :pointer rom-3d-vipr-maze
-    0b00001100
-    0b00011010
-    0b00111110
-    0b00111000
-    0b00011100
-    0b00001100
-    0b01011100
-    0b00111000
-    str "3D VIP'r Maze" str-end
+    :include "../roms/3d-vipr-maze.png" no-labels
 
-    :pointer rom-pong
-    0b00000000
-    0b00001100
-    0b00011010
-    0b01011110
-    0b10001100
-    0b00100000
-    0b01001000
-    0b10010000
-    str "Pong" str-end
+    :pointer rom-cave-explorer
+    :include "../roms/cave-explorer.png" no-labels
 
     :pointer rom-test-suite
-    0b00111000
-    0b01111100
-    0b01011111
-    0b00011111
-    0b00110110
-    0b01110000
-    0b11100000
-    0b11000000
-    str "CHIP8 Test Suite" str-end
+    :include "../roms/chip8-test-suite.png" no-labels
+
+    :pointer rom-labyrinthine
+    :include "../roms/labyrinthine.png" no-labels
+
+    :pointer rom-pong
+    :include "../roms/pong.png" no-labels
+
+    :pointer rom-sierpinski
+    :include "../roms/sierpinski.png" no-labels
+
+    :pointer rom-space-invaders
+    :include "../roms/space-invaders.png" no-labels
+
+    :pointer rom-wdl
+    :include "../roms/wdl.png" no-labels
+
+    :pointer rom-yasn
+    :include "../roms/yasn.png" no-labels
 
 
 : rom-3d-vipr-maze
     :byte SUPERCHIP
-    :include "../roms/3dviprmaze-schip.ch8"
+    :include "../roms/3d-vipr-maze.ch8"
 
 : rom-pong
     :byte VIP
-    :include "../roms/pong2.ch8"
-
-: rom-ant
-    :byte SUPERCHIP
-    :include "../roms/ant.ch8"
-
-: rom-snake
-    :byte CHIP8
-    :include "../roms/snake.ch8"
+    :include "../roms/pong.ch8"
 
 : rom-space-invaders
     :byte SUPERCHIP
-    :include "../roms/Space Invaders [David Winter].ch8"
-
-: rom-christmas
-    :byte CHIP8
-    :include "../roms/christmas.ch8"
+    :include "../roms/space-invaders.ch8"
 
 : rom-sierpinski
     :byte CHIP8
     :include "../roms/sierpinski.ch8"
 
 : rom-test-suite
-    :byte CHIP8
+    :byte VIP
     :include "../roms/chip8-test-suite.ch8"
 
-: rom-logo
+: rom-wdl
     :byte CHIP8
-    :include "../roms/logo.ch8"
+    :include "../roms/wdl.ch8"
 
-: rom-ibm
+: rom-yasn
     :byte CHIP8
-    :include "../roms/ibm.ch8"
+    :include "../roms/yasn.ch8"
 
-: rom-corax
-    :byte CHIP8
-    :include "../roms/3-corax+.ch8"
-
-: rom-flags
-    :byte CHIP8
-    :include "../roms/4-flags.ch8"
-
-: rom-quirks
+: rom-labyrinthine
     :byte VIP
-    :include "../roms/5-quirks.ch8"
+    :include "../roms/labyrinthine.ch8"
 
-: rom-keypad
+: rom-cave-explorer
     :byte CHIP8
-    :include "../roms/6-keypad.ch8"
+    :include "../roms/cave-explorer.ch8"

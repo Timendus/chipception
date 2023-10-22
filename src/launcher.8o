@@ -1,6 +1,3 @@
-:const SUPERCHIP 1
-:const FONTLIB-NOWRAP 1
-:include "text/font-header.8o"
 :include "math/macros.8o"
 
 :macro launch {
@@ -9,109 +6,90 @@
 }
 
 : main
-	setFont font-4-pix-low
-
 	i := rom-table
 	load v0
 	vA := v0   # Total number of items
+	vE := vA
+	vE -= 1
+	calculate-handle-positions
 	vD := 0    # Selected item
 
+: main-loop
+	# Wait for key release
+	v0 := 5
+	if v0 key then jump main-loop
+	v0 := 8
+	if v0 key then jump main-loop
+
+	clear
+	# Where do we start rendering?
+	vB := vD
+	if vD != 0 then vB -= 1
+	if vD == vE then vB -= 1
+	vC := 2    # Y coordinate of start item
+
+	# Render the items that fit on screen
 	loop
-		clear
-		vB := 0    # Start item for render
-		vC := 2    # Y coordinate of start item
+		while vC != 32
+		while vB != vA
+		v2 := vB
+		find-program
+		render-program
+		if vB == vD then highlight
+		vB += 1
+		vC += 10
+	again
 
-		# Render the items that fit on screen
-		loop
-			while vA != vB
-			v2 := vB
-			find-program
-			render-program
-			if vD == vB then highlight
-			vB += 1
-			vC += 10
-			if vC != 41 then
-		again
+	render-scrollbar
 
-		render-scrollbar
-
-		# Wait for user input
+	# Wait for user input
+	loop
 		v0 := key
 		if v0 == 5 begin
-			if vD != 0 then vD -= 1
+			if vD == 0 then vD := vA
+			vD -= 1
+			jump main-loop
 		end
 		if v0 == 8 begin
-			vA -= 1
-			if vD != vA then vD += 1
-			vA += 1
+			if vD == vE begin
+				vD := 0
+			else
+				vD += 1
+			end
+			jump main-loop
 		end
 		if v0 == 6 then launch-program
-
-		# Wait for key release
-: main-key-wait-loop
-		v0 := 5
-		if v0 key then jump main-key-wait-loop
-		v0 := 8
-		if v0 key then jump main-key-wait-loop
 	again
 
 # v2 is the index of a program, get a pointer to the start in i and v0, v1
 # Destroys: i, v0, v1, v2, v3, v4
 : find-program
 	i := rom-table
-	:alias unpack-hi v3
-	:alias unpack-lo v4
-	:unpack 0xA rom-table
 	vF := 1
 	i += vF
-	v4 += vF
-	v3 += vF
 	loop
 		while v2 != 0
 		v2 -= 1
-		# An entry is 2 + 8 + string length bytes long
-		# So first just add 10 bytes to jump over the pointer and icon
-		vF := 10
+		vF := 58	# An entry is 2 + 56 bytes long
 		i += vF
-		v4 += vF
-		v3 += vF
-		# Then, find the end of the string (which should be fontlib-str-end)
-		v0 := 0x00
-		loop
-			while v0 != fontlib-str-end
-			load v0
-			vF := 1
-			i += vF
-			v4 += vF
-			v3 += vF
-		again
 		# We're now pointing to the next entry
 	again
-	v0 := v3
-	v1 := v4
 	return
 
-# v0, v1 and i both point to a program description table
+# i points to a program entry
 # Render that program at Y = vC
 : render-program
 	v2 := 2
-
-	# Render icon
-	vF := 2
-	i += vF
-	sprite v2 vC 8
-
-	# Render name
-	vF := 10
-	v1 += vF
-	v0 += vF
-	v2 += 10
-	v3 := vC
-	v3 += 2
-	v4 := 58
-	v5 := vC
-	v5 += 7
-	jump fontlib-draw-text
+	v3 := 2
+	i += v3
+	v3 := 8
+	loop
+		while v2 != 58
+		sprite v2 vC 8
+		i += v3
+		v2 += 8
+	again
+	return
 
 # Draw a highlight at Y = vC
 : highlight
@@ -130,24 +108,44 @@
 # Destroys: v0 - v8
 : render-scrollbar
 	i := scrollbar-line
-	v0 := 60
-	v1 := 0
+	v1 := 60
+	v2 := 0
 	loop
-		while v1 != 32
-		sprite v0 v1 8
-		v1 += 8
+		while v2 != 32
+		sprite v1 v2 8
+		v2 += 8
 	again
 
-	v1 := vD
-	v2 := 24
-	mul-8-8 v1 v2 v3 v4 v5 			# [v3, v4] = v1 * v2
-
-	v5 := vA
-	v5 -= 1
-	div-16-8 v3 v4 v5 v6 v7 v8		# v4 = [v3, v4] / v5
+	i := handle-positions
+	i += vD
+	load v0
 
 	i := scrollbar-handle
-	sprite v0 v4 8
+	sprite v1 v0 8
+	return
+
+# Pre-calculate all the positions the handle needs to be in
+# vA = total number of items
+: calculate-handle-positions
+	vD := 0
+	loop
+		while vD != vA
+
+		v1 := vD
+		v2 := 24
+		mul-8-8 v1 v2 v3 v4 v5 			# [v3, v4] = v1 * v2
+
+		v5 := vA
+		v5 -= 1
+		div-16-8 v3 v4 v5 v6 v7 v8		# v4 = [v3, v4] / v5
+
+		i := handle-positions
+		i += vD
+		v0 := v4
+		save v0
+
+		vD += 1
+	again
 	return
 
 # Launch selected program, index is in vD
@@ -157,9 +155,6 @@
 	load v1
 	launch
 	return
-
-:include "text/font-library.8o"
-:include "text/font-4-pix-low.8o"
 
 :segment data
 
@@ -200,5 +195,9 @@
 	0b01010000
 	0b01010000
 	0b00100000
+
+: handle-positions
+	0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+	0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
 
 : rom-table
