@@ -1,6 +1,7 @@
 # Divide 16-bit value by 8-bit value, resulting in 8-bit result
 # numerator-low = [numerator-high, numerator-low] / divisor
 # remainder = [numerator-high, numerator-low] % divisor
+# Destroys: numerator-high, temp1, temp2
 :macro div-16-8 numerator-high numerator-low divisor remainder temp1 temp2 {
   # Aliases for easy debugging:
   # :alias num-high numerator-high
@@ -35,6 +36,7 @@
 # Divide 8-bit value by 8-bit value, resulting in 8-bit result
 # numerator = numerator / divisor
 # remainder = numerator % divisor
+# Destroys: temp1, temp2
 :macro div-8-8 numerator divisor remainder temp1 temp2 {
   # Aliases for easy debugging:
   # :alias num numerator
@@ -65,6 +67,7 @@
 
 # Multiply two 8-bit values, resulting in 16-bit result
 # [result-high, result-low] = multiplicand * multiplier
+# Destroys: multiplicand, multiplier, temp
 :macro mul-8-8 multiplicand multiplier result-high result-low temp {
   # Aliases for easy debugging:
   # :alias multcand multiplicand
