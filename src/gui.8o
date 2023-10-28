@@ -7,21 +7,23 @@
 #   * v3 = height in pixels
 #   * vC = border colour (0x00 for blue, 0xFF for orange)
 : draw-window
-    # Overwrite plane 2, because the display buffers of the interpreters don't
-    # have a plane two. Extend it a bit for the shadows.
-    i := long display-buffer-plane2
+    # Draw a large black square. Because the display buffers of the interpreters
+    # don't have a plane two, and so we get window shadows.
     v4 := 0x00
     v0 -= 1
     v1 -= 1
     v2 += 2
     v3 += 2
+    i := long display-buffer-plane1
+    draw-square
+    i := long display-buffer-plane2
     draw-square
     v0 += 1
     v1 += 1
     v2 -= 2
     v3 -= 2
 
-    # Draw all four borders and shadows
+    # Draw all four borders and highlights
 
     # Top
     # X1 - Window color line
@@ -31,7 +33,7 @@
     v4 := 0xFF
     i := long display-buffer-plane2
     draw-horizonal-line
-    # 10 - White shadow line (with 0 square from above)
+    # 10 - White shadow line
     v0 -= 1
     v1 -= 1
     v2 += 1
@@ -49,7 +51,7 @@
     v4 := 0xFF
     i := long display-buffer-plane2
     draw-vertical-line
-    # 10 - White shadow line (with 0 square from above)
+    # 10 - White shadow line
     v0 -= 1
     i := long display-buffer-plane1
     draw-vertical-line
@@ -63,29 +65,13 @@
     v4 := 0xFF
     i := long display-buffer-plane2
     draw-vertical-line
-    # 00 - Dark gray line (with 0 square from above)
-    v0 += 1
-    v1 -= 1
-    v3 += 2
-    v4 := 0x00
-    i := long display-buffer-plane1
-    draw-vertical-line
-    v1 += 1
-    v3 -= 2
     v0 -= v2
 
     # Bottom
-    # 00 - Dark gray line (with 0 square from above)
-    v0 -= 1
-    v1 += v3
-    v2 += 1
-    v4 := 0
-    i := long display-buffer-plane1
-    draw-horizonal-line
     # X1 - Window color line
     v0 += 1
+    v1 += v3
     v1 -= 1
-    v2 -= 1
     v4 := vC
     i := long display-buffer-plane1
     draw-horizonal-line
