@@ -233,8 +233,7 @@
             load v4 - v4
             vC := 0xFF
             if v4 == 1 then vC := 0
-            draw-box
-            draw-header
+            draw-window
             point-to WINDOW_POSITION
             load v2 - v3
             vF := DISPLAY_BUFFER
