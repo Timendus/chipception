@@ -160,13 +160,32 @@
     point-to FOCUSSED
     load v0
     if v0 != 1 then jump step-back-one-opcode
-    point-to REGISTERS
-    i += second-nibble
+    point-to KEYPAD_MODE
+    load v1 - v1
     v0 := 0
+    if v1 != KEYPAD_WAITING_FOR_KEY_PRESS begin
+        loop
+            if v0 key then jump step-back-one-opcode
+            v0 += 1
+            if v0 != 0x10 then
+        again
+        if v1 == KEYPAD_NOT_WAITING begin
+            v1 := KEYPAD_WAITING_FOR_KEY_PRESS
+            save v1 - v1
+            jump step-back-one-opcode
+        end
+        v1 := KEYPAD_NOT_WAITING
+        save v1 - v1
+        return
+    end
     loop
         if v0 key begin
+            v1 := KEYPAD_WAITING_FOR_KEY_RELEASE
+            save v1 - v1
+            point-to REGISTERS
+            i += second-nibble
             save v0
-            return
+            jump step-back-one-opcode
         end
         v0 += 1
         if v0 != 0x10 then

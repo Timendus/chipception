@@ -12,7 +12,8 @@
 :calc  RUNNING           { USERFLAGS + 16 }
 :calc  ROM               { RUNNING + 1 }
 :calc  DISPLAY_MODE      { ROM + 2 }
-:calc  QUIRKS            { DISPLAY_MODE + 1 }
+:calc  KEYPAD_MODE       { DISPLAY_MODE + 1 }
+:calc  QUIRKS            { KEYPAD_MODE + 1 }
 :calc  CYCLES_PER_FRAME  { QUIRKS + 1 }
 :calc  WINDOW_POSITION   { CYCLES_PER_FRAME + 1 }
 :calc  WINDOW_POSITION_X { WINDOW_POSITION + 0 }
@@ -77,6 +78,10 @@
 :const STATE_RUNNING 1
 :const STATE_WAITING_FOR_INTERRUPT 2
 :const STATE_INTERRUPT_TRIGGERED 3
+
+:const KEYPAD_NOT_WAITING 0
+:const KEYPAD_WAITING_FOR_KEY_PRESS 1
+:const KEYPAD_WAITING_FOR_KEY_RELEASE 2
 
 :const DISPLAY_LORES 0
 :const DISPLAY_HIRES 1
