@@ -545,8 +545,6 @@
 : current-number-of-machines
     0
 
-:monitor current-number-of-machines 1
-
 : beep-pattern
     0xFF 0x00 0xFF 0x00 0xFF 0x00 0xFF 0x00 0xFF 0x00 0xFF 0x00 0xFF 0x00 0xFF 0x00
 
@@ -560,3 +558,16 @@
 
 : free-memory
     # Starts here
+
+:monitor current-number-of-machines 1
+
+:monitor free-memory "%2x %2x %2x %2x %2x %2x"
+
+:calc machine0 { free-memory + ( MAX_MACHINES * 2 ) + ( MACHINE_SIZE * 0 ) }
+:monitor machine0 73
+
+:calc machine1 { free-memory + ( MAX_MACHINES * 2 ) + ( MACHINE_SIZE * 1 ) }
+:monitor machine1 73
+
+:calc machine2 { free-memory + ( MAX_MACHINES * 2 ) + ( MACHINE_SIZE * 2 ) }
+:monitor machine2 73
