@@ -33,15 +33,6 @@
     v4 := 0xFF
     i := long display-buffer-plane2
     draw-horizonal-line
-    # 10 - White shadow line
-    v0 -= 1
-    v1 -= 1
-    v2 += 1
-    i := long display-buffer-plane1
-    draw-horizonal-line
-    v0 += 1
-    v1 += 1
-    v2 -= 1
 
     # Left
     # X1 - Window color line
@@ -51,14 +42,11 @@
     v4 := 0xFF
     i := long display-buffer-plane2
     draw-vertical-line
-    # 10 - White shadow line
-    v0 -= 1
-    i := long display-buffer-plane1
-    draw-vertical-line
 
     # Right
     # X1 - Window color line
     v0 += v2
+    v0 -= 1
     v4 := vC
     i := long display-buffer-plane1
     draw-vertical-line
@@ -66,10 +54,10 @@
     i := long display-buffer-plane2
     draw-vertical-line
     v0 -= v2
+    v0 += 1
 
     # Bottom
     # X1 - Window color line
-    v0 += 1
     v1 += v3
     v1 -= 1
     v4 := vC
