@@ -1,9 +1,7 @@
 # Chipception
 
-CHIP-8 interpreters have been written in *every* programming language... except in
-CHIP-8 itself.
-
-Until now! 😄
+Because CHIP-8 interpreters have been written in *every* programming language,
+it also deserves one written in CHIP-8 itself!
 
 ![Yo dawg, heard you like CHIP-8. So I put CHIP-8 in ur CHIP-8](./pictures/meme.jpg)
 
@@ -346,15 +344,17 @@ need anymore!
 Compare that to the mock-up I made at the start of this project! I was quite
 amazed that I had come this far already 😄
 
-I may however change the looks of the shadows a bit. After some feedback from
-the #chip-8 channel on the EmuDev Discord I was not entirely convinced that this
-is the best looking option. Here are some alternatives I drew:
+After some feedback from the #chip-8 channel on the EmuDev Discord I was not
+entirely convinced that these window shadows are the best looking option. Here
+are some alternatives I drew:
 
 ![One alternative](./pictures/different-shadows-1.png)
 
 ![Another alternative](./pictures/different-shadows-2.png)
 
-We'll see what we end up with!
+After messing with the different alternatives in the code a bit, I realised that
+I could implement the last design with the smallest number of instructions.
+Changing the design saved around 50 bytes 🎉
 
 ## Launching programs
 
@@ -370,43 +370,66 @@ I **really** needed was an opcode for launching a new program. Then I could
 write a ROM that would actually be the interactive interface for the user.
 
 One of the hardest things to figure out was how the launcher ROM could know
-which ROMs are available to Chipception. In all honestly, I still haven't really
-come up with an elegant way. But when loading a ROM, Chipception just copies
-from the starting address of the ROM all the way until the memory of the
-virtualized interpreter is full. That means that any data *after* the launcher
-ROM is also copied into the launcher's memory, and is accessible to the ROM.
+which ROMs are available to Chipception. The solution turned out to be quite
+simple, albeit not super clean.
+
+When loading a ROM, Chipception just lazily copies data from the starting
+address of the ROM all the way until the memory of the virtualized interpreter
+is full. This way I didn't have to store the sizes of the ROM files. That means
+that any data *after* the launcher ROM is also copied into the launcher's
+memory, and is, almost accidentally, accessible to the ROM.
+
+So I just made sure that the memory lay-out of the launcher ROM looks like this:
 
 ```python
 : launcher
     :byte SUPERCHIP
     :include "../roms/launcher.ch8"
 
+
 : rom-table
-    3   # Number of ROMs
+    # Number of ROMs, max is currently 32
+    9
 
     :pointer rom-3d-vipr-maze
-    0b00001100
-    0b00011010
-    0b00111110
-    0b00111000
-    0b00011100
-    0b00001100
-    0b01011100
-    0b00111000
-    str "3D VIP'r Maze" str-end
+    :include "../roms/3d-vipr-maze.png" no-labels
+
+    :pointer rom-cave-explorer
+    :include "../roms/cave-explorer.png" no-labels
+
+    :pointer rom-test-suite
+    :include "../roms/chip8-test-suite.png" no-labels
 
     # ...
 ```
 
 It's not pretty, but by having a table with information on the available ROMs
 and their starting addresses loaded right after the launcher ROM, we can show
-the user which ROMs Chipception has available with a name and an icon, and the
-launcher ROM can start the selected program by invoking the new opcode.
+the user which ROMs Chipception has available with a nice graphic, and the
+launcher ROM can start the selected program by invoking the new
+Chipception-specific opcode.
 
 ![The launcher ROM in action](./pictures/launcher.png)
 
-This also meant that my old launcher code, that just launched several
-interpreters with fixed settings and ROMs, could be slimmed down to a single
-subroutine. So we once again actually saved executable memory space while adding
-a new feature!
+Having this fancy new launcher meant that my old testing code, that just
+launched several interpreters with fixed settings and ROMs, could be slimmed
+down to a single subroutine. So we once again actually saved executable memory
+space while adding a new feature!
+
+## Not the first
+
+Around this time I discovered that I wasn't actually the first to write a CHIP-8
+interpreter in CHIP-8. Which makes perfect sense. If I feel attracted to the
+stupidity of such an idea, surely there are other emulator devs who feel the
+same. But I had done a Google search before starting the project, and nothing
+showed up.
+
+But when sharing some more screenshots of Chipception-in-progress on the EmuDev
+Discord I was told that [Geotale wrote a CHIP-8 interpreter in
+CHIP-8](https://johnearnest.github.io/Octo/index.html?key=26l2CvY6) in 2021.
+
+Lucky for me, that implementation doesn't do multi-tasking and window
+management, and does not implement SUPER-CHIP. So this project is still quite
+unique in those regards, I guess 😉
+
 
