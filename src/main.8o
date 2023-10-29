@@ -130,9 +130,18 @@
             v0 := 5
             if v0 key then move-focussed
 
-            # Z + F -> Go full screen
-            # v0 := 0xE
-            # if v0 key then ...
+            :if FULLSCREEN
+                # Z + F -> Go full screen
+                v0 := 0xE
+                if v0 key begin
+                    i := long window-mode
+                    load v0 - v0
+                    vF := 2
+                    v0 ^= vF
+                    save v0
+                    wait-release
+                end
+            :end
 
             # Z + S -> Open launcher
             v0 := 8
