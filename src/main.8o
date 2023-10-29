@@ -1,13 +1,13 @@
 :include "macros.8o"
 
 : main
+    # Render title image
     hires
     :unpack long title-image
     display-overwrite
     display-copy
-    vF := 120
+    vF := 60
     delay := vF
-    sleep
 
     # Initialize machines table at `free-memory`, machines will be created after
     # the machines table.
@@ -40,8 +40,34 @@
     v0 := 70
     pitch := v0
 
-    # Initialize the app launcher
+    # Initialize the launcher app
     start-launcher
+
+    # Do the scroll down animation to the desktop
+    sleep
+    vE := 0
+    loop
+        plane 3
+        scroll-up 2
+        i := long background-image
+        i += vE
+        v0 := 0
+        v1 := 62
+        v2 := 64
+        plane 1
+        loop
+            sprite v0 v1 2
+            i += v2
+            v0 += 8
+            if v0 == 128 then plane 2
+            if v0 != 0 then
+        again
+        vF := 1
+        delay := vF
+        sleep
+        vE += 2
+        if vE != 64 then
+    again
 
     # Run forever
     loop
