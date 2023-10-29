@@ -2,13 +2,14 @@
 
 # Chipception
 
-![Chipception running in Octo](./pictures/launcher.gif)
+![Chipception title screen](./pictures/title-top.png)
 
 A CHIP-8 and SUPER-CHIP interpreter written in XO-CHIP. My submission to
 [Octojam 10](https://itch.io/jam/octojam-10). Because CHIP-8 interpreters have
 been written in *every* programming language and the platform also deserves one
 written in CHIP-8 itself! 😄
 
+* [This program on Itch.io](https://timendus.itch.io/chipception-os)
 * [Run Chipception in your browser](https://timendus.github.io/chipception/)
 * [Download the ROM](https://github.com/Timendus/chipception/raw/main/dist/chipception.ch8)
 
@@ -20,6 +21,8 @@ the launcher app itself counts as a ROM.
 
 The launcher app will properly start ROMs in either CHIP-8 or SUPER-CHIP mode,
 and with the correct quirks. You can not change those settings interactively.
+
+![Using the launcher app](./pictures/launcher.gif)
 
 These are the keys that control the launcher:
 
