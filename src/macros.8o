@@ -27,7 +27,7 @@
 
 :alias cycle vD
 :alias current-machine vE
-:const MAX_MACHINES 6
+:const MAX_MACHINES 8
 
 :macro point-to PTR {
     vF := PTR
