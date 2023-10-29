@@ -1,7 +1,7 @@
 # Chipception
 
 Because CHIP-8 interpreters have been written in *every* programming language,
-it also deserves one written in CHIP-8 itself!
+it also deserves one written in CHIP-8 itself! 😄
 
 ![Yo dawg, heard you like CHIP-8. So I put CHIP-8 in ur CHIP-8](./pictures/meme.jpg)
 
@@ -147,10 +147,10 @@ useful behaviour.
 
 Virtualising the display turned out to be a lot more work than doing the CPU. I
 had to -- once again -- write a custom double buffered rendering system with a
-custom sprite drawing routine in CHIP-8 that could draw 8xN and 16x16 sprites
-as well as get all the quirks right. Then I had to implement the `clear` opcode
-and all the scrolling opcodes to operate on those buffers. Just so that each
-interpreter could have its own isolated display behaviour.
+custom sprite drawing routine in CHIP-8 that could draw 8xN and 16x16 sprites as
+well as get all the quirks right. Then I had to implement the other opcodes to
+operate on those buffers. Just so that each interpreter could have its own
+isolated display behaviour<sup>1</sup>.
 
 And then I needed to composit those discrete display buffers together to form
 the full display output. Because I wanted to be able to move virtual windows
@@ -175,6 +175,12 @@ now all of a sudden Chipception could do this:
 
 This is still just a single CHIP-8 ROM running in Octo, with a custom colour
 scheme. This is starting to go somewhere!
+
+_Note 1: I never properly finished the buffer scrolling opcodes as the ROMs I
+chose to run in this interpreter didn't use them. In the end I removed the
+scrolling behaviour entirely to save executable space. So in that sense it's not
+a "full" SUPER-CHIP interpreter, unfortunately. It can be done, but only at the
+expense of leaving out some other features._
 
 ## Managing windows
 
@@ -409,7 +415,7 @@ the user which ROMs Chipception has available with a nice graphic, and the
 launcher ROM can start the selected program by invoking the new
 Chipception-specific opcode.
 
-![The launcher ROM in action](./pictures/launcher.png)
+![The launcher ROM in action](./pictures/launcher.gif)
 
 Having this fancy new launcher meant that my old testing code, that just
 launched several interpreters with fixed settings and ROMs, could be slimmed
@@ -426,10 +432,11 @@ showed up.
 
 But when sharing some more screenshots of Chipception-in-progress on the EmuDev
 Discord I was told that [Geotale wrote a CHIP-8 interpreter in
-CHIP-8](https://johnearnest.github.io/Octo/index.html?key=26l2CvY6) in 2021.
+CHIP-8](https://johnearnest.github.io/Octo/index.html?key=26l2CvY6) in 2021. Mad
+props to Geotale for daring to take up that project and beating me to it!
 
-Lucky for me, that implementation doesn't do multi-tasking and window
-management, and does not implement SUPER-CHIP. So this project is still quite
-unique in those regards, I guess 😉
+Lucky for me, their implementation doesn't do multi-tasking and window
+management, nor implement SUPER-CHIP. So my project is still unique in those
+regards, I hope 😉
 
 
