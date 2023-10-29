@@ -5,10 +5,12 @@
         "octopus": "octopus src/main.8o dist/chipception.8o && cat dist/chipception.8o | pbcopy",
         "assemble": "../../chiplet/build/bin/chiplet src/main.8o -o dist/chipception.ch8",
         "start": "npm run launcher && npm run copy && npm run assemble",
-        "launcher": "../../chiplet/build/bin/chiplet src/launcher.8o -o roms/launcher.ch8"
+        "launcher": "../../chiplet/build/bin/chiplet src/launcher.8o -o roms/launcher.ch8",
+        "build": "../../chiplet/build/bin/chiplet src/main.8o -P -o dist/chipception.8o && octo --options octo-config.json dist/chipception.8o docs/index.html && npm run assemble"
     },
     "devDependencies": {
         "@chipcode/fonts": "^0.1.2",
-        "@chipcode/octopus": "file:../chipcode/octopus"
+        "@chipcode/octopus": "file:../chipcode/octopus",
+        "octo-assembler": "^0.1.4"
     }
 }

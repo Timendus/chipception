@@ -1,0 +1,21 @@
+{
+	"tickrate": 200000,
+	"fillColor": "#ffffff",
+	"fillColor2": "#1a7eb3",
+	"blendColor": "#e59823",
+	"backgroundColor": "#434343",
+	"buzzColor": "#000000",
+	"quietColor": "#000000",
+	"shiftQuirks": false,
+	"loadStoreQuirks": false,
+	"vfOrderQuirks": false,
+	"clipQuirks": false,
+	"jumpQuirks": false,
+	"logicQuirks": false,
+	"vBlankQuirks": false,
+	"screenRotation": 0,
+	"maxSize": 65024,
+	"touchInputMode": "vip",
+	"fontStyle": "octo",
+	"displayScale": "5"
+}
