@@ -49,23 +49,22 @@
 : display-overwrite
     i := overwrite-smc
     save v1
-    v8 := 0
-    v9 := 0
+    make16 vC v1 0
     loop
         0xF0 0x00 # i := long ....
         : overwrite-smc
         0 0
-        vA := v8
-        add-to-i vA v9
-        load v7
+        v0 := vC
+        add-16-bit-to-i
+        load v2 - v9
         i := long display-buffer
-        vA := v8
-        add-to-i vA v9
-        save v7
+        v0 := vC
+        add-16-bit-to-i
+        save v2 - v9
         vF := 8
-        v9 += vF
-        v8 += vF
-        if v8 != 0x08 then
+        v1 += vF
+        vC += vF
+        if vC != 0x08 then
     again
     return
 

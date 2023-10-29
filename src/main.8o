@@ -293,6 +293,19 @@
         if vF == 0 then return
     again
 
+# Add v0, v1 as a 16-bit value to i
+: add-16-bit-to-i
+    loop
+        while v0 != 0
+        # Do i += 0x100 in two parts
+        vF := 0x80
+        i += vF
+        i += vF
+        v0 -= 1
+    again
+    i += v1
+    return
+
 # Find the machine that is at the given z-position.
 # Input: vD is desired z-position
 # Returns:
@@ -502,35 +515,31 @@
     load v1
     i := load-program-smc
     save v1
-    make16 vC vD 0
+    make16 vC v1 0
     loop
         0xF0 0x00
         : load-program-smc
         0x00 0x00
         # i == program address
-        load-program-add
+        v0 := vC
+        add-16-bit-to-i
         # i == byte within program
-        load v7
+        load v2 - v9
         point-to RAM
         vC += 2
-        load-program-add
+        v0 := vC
+        add-16-bit-to-i
         vC -= 2
-        save v7
+        save v2 - v9
 
         # Increase index
         vF := 8
-        vD += vF
+        v1 += vF
         vC += vF
 
         # Are we done? (Just fill RAM, whatever)
         if vC != 0x0E then
     again
-    return
-
-# Add (v3, v4) as one 16-bit number to the index register
-: load-program-add
-    vB := vC
-    add-to-i vB vD
     return
 
 # (v1, v2) point to font data, copy it into RAM at 0x000

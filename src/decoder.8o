@@ -13,13 +13,13 @@
     v2 := v0
     v3 := v1
     vF := 2
-    v1 += vF
-    v0 += vF
-    save v0 - v1
+    v3 += vF
+    v2 += vF
+    save v2 - v3
 
     # Load opcode from memory
     point-to RAM
-    add-to-i v2 v3
+    add-16-bit-to-i
     load opcode-hi - opcode-lo
     second-nibble := opcode-hi
     vF := 0x0F

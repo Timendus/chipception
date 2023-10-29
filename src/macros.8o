@@ -59,19 +59,6 @@
     save vF - vF
 }
 
-# Add (REGa, REGb) as one 16-bit number to the index register (destructive to REGa)
-:macro add-to-i REGa REGb {
-    loop
-        while REGa != 0
-        vF := 0xFF
-        i += vF
-        vF := 1
-        i += vF
-        REGa -= 1
-    again
-    i += REGb
-}
-
 # A few constants giving meaning to magic values
 
 :const STATE_STOPPED 0

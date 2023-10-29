@@ -336,7 +336,7 @@
     point-to INDEX
     load v1
     point-to RAM
-    add-to-i v0 v1
+    add-16-bit-to-i
     bcd v2
     return
 
@@ -373,7 +373,7 @@
         point-to INDEX
         load v1
         point-to RAM
-        add-to-i v0 v1
+        add-16-bit-to-i
         i += v2
         load v1 - v1
         point-to REGISTERS
@@ -402,7 +402,7 @@
         point-to INDEX
         load v1
         point-to RAM
-        add-to-i v0 v1
+        add-16-bit-to-i
         i += v2
         save v3 - v3
         v2 += 1
