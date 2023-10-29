@@ -184,16 +184,19 @@
     0xF0 0x00   # i := long ...
     : start-program-smc
     0x00 0x00
-    load v5 - v5
+    load v5 - v6
 
     # Save start of ROM and quirks
-    vF := 1
+    vF := 2
     v4 += vF
     v3 += vF
     select-machine
     point-to ROM
     save v3 - v4
-    set-quirks v5
+    # Quirks and cycles per frame are sequential in memory, make use of this to
+    # save both in one go:
+    point-to QUIRKS
+    save v5 - v6
 
     # Position window
     point-to WINDOW_POSITION
@@ -450,7 +453,6 @@
     set8  SP               0
     set8  DISPLAY_MODE     DISPLAY_LORES
     set8  RUNNING          STATE_RUNNING
-    set8  CYCLES_PER_FRAME 30
     clear-screen
     :alias unpack-hi v1
     :alias unpack-lo v2

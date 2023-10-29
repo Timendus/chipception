@@ -1,7 +1,8 @@
 :segment data
 
 : launcher
-    :byte SUPERCHIP
+    :byte SUPERCHIP     # Quirks
+    60                  # Cycles per frame
     :include "../roms/launcher.ch8"
 
 
@@ -38,37 +39,46 @@
 
 
 : rom-3d-vipr-maze
-    :byte SUPERCHIP
+    :byte SUPERCHIP     # Quirks
+    60                  # Cycles per frame
     :include "../roms/3d-vipr-maze.ch8"
 
 : rom-pong
-    :byte VIP
+    :byte VIP           # Quirks
+    15                  # Cycles per frame
     :include "../roms/pong.ch8"
 
 : rom-space-invaders
-    :byte SUPERCHIP
+    :byte SUPERCHIP     # Quirks
+    30                  # Cycles per frame
     :include "../roms/space-invaders.ch8"
 
 : rom-sierpinski
-    :byte CHIP8
+    :byte CHIP8         # Quirks
+    30                  # Cycles per frame
     :include "../roms/sierpinski.ch8"
 
 : rom-test-suite
-    :byte VIP
+    :byte VIP           # Quirks
+    60                  # Cycles per frame
     :include "../roms/chip8-test-suite.ch8"
 
 : rom-wdl
-    :byte CHIP8
+    :byte CHIP8         # Quirks
+    30                  # Cycles per frame
     :include "../roms/wdl.ch8"
 
 : rom-yasn
-    :byte CHIP8
+    :byte CHIP8         # Quirks
+    30                  # Cycles per frame
     :include "../roms/yasn.ch8"
 
 : rom-labyrinthine
-    :byte VIP
+    :byte CHIP8         # Quirks
+    30                  # Cycles per frame
     :include "../roms/labyrinthine.ch8"
 
 : rom-cave-explorer
-    :byte CHIP8
+    :byte CHIP8         # Quirks
+    30                  # Cycles per frame
     :include "../roms/cave-explorer.ch8"
