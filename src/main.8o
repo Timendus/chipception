@@ -1,6 +1,13 @@
 :include "macros.8o"
 
 : main
+    hires
+    :unpack long title-image
+    display-overwrite
+    display-copy
+    vF := 120
+    delay := vF
+    sleep
 
     # Initialize machines table at `free-memory`, machines will be created after
     # the machines table.
@@ -27,9 +34,7 @@
         if v4 != 0 then
     again
 
-    # Make sure we are running in hires ourselves and we sound friendly
-    hires
-    clear
+    # Make sure we sound friendly
     i := long beep-pattern
     audio
     v0 := 70
@@ -103,10 +108,7 @@
         composite-display
 
         # Wait to sync up with reality
-        loop
-            v0 := delay
-            if v0 != 0 then
-        again
+        sleep
 
         # Check for magic key combo's
         v0 := 0xA
@@ -245,6 +247,13 @@
         vD += 1
     again
     jump display-copy
+
+# Waste time until the delay timer has run out
+: sleep
+    loop
+        vF := delay
+        if vF == 0 then return
+    again
 
 # Find the machine that is at the given z-position.
 # Input: vD is desired z-position
@@ -409,10 +418,7 @@
         # Limit movement to one pixel per frame
         v0 := 1
         delay := v0
-        loop
-            v0 := delay
-            if v0 != 0 then
-        again
+        sleep
 
         # Exit movement code by pressing Z
         v0 := 0xA

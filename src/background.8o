@@ -6,6 +6,10 @@
 #  01 - Blue
 #  11 - Orange
 
+: title-image
+  :include "../pictures/title-layer1.png" 8x64 no-labels
+  :include "../pictures/title-layer2.png" 8x64 no-labels
+
 : background-image
   :include "../pictures/background-layer1.png" 8x64 no-labels
   :include "../pictures/background-layer2.png" 8x64 no-labels
