@@ -366,7 +366,6 @@
     return
 
 ## Loading and saving registers
-# TODO: see if we can speed this up by loading them all at once
 
 : read-from-memory
     v2 := 0
@@ -468,32 +467,45 @@
         if v1 == 0 then return
     again
 
+# Note that the scrolling opcodes are not finished and have been disabled to
+# save executable memory space. The ROMs I'm running don't need these opcodes
+# and doing them right would take up more valuable space than I'm currently
+# willing to invest in something I'm not using. Using these opcodes will act as
+# a no-op.
+
 # Scroll the display down N pixels
 : scrll-down
-    # TODO: operate on own buffer
-    opcode-lo >>= opcode-lo
-    opcode-lo >>= opcode-lo
-    opcode-lo >>= opcode-lo
-    opcode-lo >>= opcode-lo
-    vF := 0xC0
-    opcode-lo |= vF
-    i := scroll-down-smc
-    save opcode-lo - opcode-lo
-    :next scroll-down-smc
-    scroll-down 0
-    return
+    :if SCROLLING
+        # TODO: operate on own buffer
+        opcode-lo >>= opcode-lo
+        opcode-lo >>= opcode-lo
+        opcode-lo >>= opcode-lo
+        opcode-lo >>= opcode-lo
+        vF := 0xC0
+        opcode-lo |= vF
+        i := scroll-down-smc
+        save opcode-lo - opcode-lo
+        :next scroll-down-smc
+        scroll-down 0
+        return
+    :end
 
 # Scroll the display left 4 pixels
 : scrll-left
-    # TODO: operate on own buffer
-    scroll-left
-    return
+    :if SCROLLING
+        # TODO: operate on own buffer
+        scroll-left
+        return
+    :end
 
 # Scroll the display right 4 pixels
 : scrll-right
-    # TODO: operate on own buffer
-    scroll-right
-    return
+    :if SCROLLING
+        # TODO: operate on own buffer
+        scroll-right
+    :else
+        return
+    :end
 
 : set-lores
     v0 := DISPLAY_LORES

@@ -285,6 +285,52 @@
     vF := flipped
     return
 
+:if SCROLLING
+# Note that the scrolling opcodes are not finished and have been disabled to
+# save executable memory space. The ROMs I'm running don't need these opcodes
+# and doing them right would take up more valuable space than I'm currently
+# willing to invest in something I'm not using. Using these opcodes will act as
+# a no-op.
+
+# Scroll a given display buffer 4 pixels left or right
+# TODO: make it work for hires?
+# Inputs:
+#   * v0, v1 = pointer to buffer
+#   * v8 = 0 for left, 1 for right
+: display-scroll-horiz
+    i := display-scroll-horiz-smc
+    save v1
+    0xF0 0x00 # i := long ....
+    : display-scroll-horiz-smc
+    0 0
+    v2 := 0
+    v3 := 0
+    v4 := 0x80
+    loop
+        load v0 - v0
+        v1 := v0
+        v0 >>= v0
+        v0 >>= v0
+        v0 >>= v0
+        v0 >>= v0
+        v1 <<= v1
+        v1 <<= v1
+        v1 <<= v1
+        v1 <<= v1
+        # if v0 == 1 begin
+            v2 |= v0
+            v2 := v1
+        # else
+        #     v2 |= v1
+        #     v2 := v0
+        # end
+        save v0
+        v3 -= 1
+        if v3 != 0 then
+    again
+    return
+:end
+
 
 :segment data
 
