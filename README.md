@@ -25,8 +25,8 @@ These are the keys that control the launcher:
 
 | CHIP-8 key | Qwerty key     | Function                               |
 | ---------- | -------------- | -------------------------------------- |
-| `5`        | `W` or ⬆       | Go up one ROM in the launcher app      |
-| `8`        | `S` or ⬇       | Go down one ROM in the launcher app    |
+| `5`        | `W` or ↑       | Go up one ROM in the launcher app      |
+| `8`        | `S` or ↓       | Go down one ROM in the launcher app    |
 | `6`        | `E` or `space` | Start selected ROM in the launcher app |
 
 The CHIP-8 key `A` (or `Z` on a querty keyboard) acts as a global modifier key,
@@ -45,8 +45,8 @@ When you are moving a window, these are the relevant keys:
 
 | CHIP-8 key | Qwerty key | Function                    |
 | ---------- | -----------| --------------------------- |
-| `5`        | `W` or ⬆   | Move window up              |
-| `8`        | `S` or ⬇   | Move window down            |
+| `5`        | `W` or ↑   | Move window up              |
+| `8`        | `S` or ↓   | Move window down            |
 | `7`        | `A` or ←   | Move window left            |
 | `9`        | `D` or →   | Move window right           |
 | `A`        | `Z`        | Return to normal execution  |
