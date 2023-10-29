@@ -1,18 +1,101 @@
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/T6T0DOOWP)
+
 # Chipception
 
-Because CHIP-8 interpreters have been written in *every* programming language,
-it also deserves one written in CHIP-8 itself! 😄
+![Chipception running in Octo](./pictures/launcher.gif)
+
+A CHIP-8 and SUPER-CHIP interpreter written in XO-CHIP. My submission to
+[Octojam 10](https://itch.io/jam/octojam-10). Because CHIP-8 interpreters have
+been written in *every* programming language and the platform also deserves one
+written in CHIP-8 itself! 😄
+
+* [Run Chipception in your browser](https://timendus.github.io/chipception/)
+* [Download the ROM](https://github.com/Timendus/chipception/raw/main/dist/chipception.ch8)
+
+## How to use Chipception
+
+Chipception will provide you with a menu (known as the launcher app) from which
+you can select ROMs to run. You can run at most 6 ROMs in parallel. Note that
+the launcher app itself counts as a ROM.
+
+The launcher app will properly start ROMs in either CHIP-8 or SUPER-CHIP mode,
+and with the correct quirks. You can not change those settings interactively.
+
+These are the keys that control the launcher:
+
+| CHIP-8 key | Qwerty key     | Function                               |
+| ---------- | -------------- | -------------------------------------- |
+| `5`        | `W` or ⬆       | Go up one ROM in the launcher app      |
+| `8`        | `S` or ⬇       | Go down one ROM in the launcher app    |
+| `6`        | `E` or `space` | Start selected ROM in the launcher app |
+
+The CHIP-8 key `A` (or `Z` on a querty keyboard) acts as a global modifier key,
+ like a `ctrl` or `alt` key on a computer. It can be used from anywhere to send
+these commands to Chipception:
+
+| CHIP-8 keys | Qwerty keys | Function                               |
+| ----------- | ----------- | -------------------------------------- |
+| `A` + `1`   | `Z` + `1`   | Cycle through windows ("Alt-Tab")      |
+| `A` + `4`   | `Z` + `C`   | <ins>C</ins>lose focussed interpreter  |
+| `A` + `D`   | `Z` + `R`   | <ins>R</ins>eset focussed interpreter  |
+| `A` + `5`   | `Z` + `W`   | Move focussed <ins>w</ins>indow around |
+| `A` + `8`   | `Z` + `S`   | <ins>S</ins>tart the launcher app      |
+
+When you are moving a window, these are the relevant keys:
+
+| CHIP-8 key | Qwerty key | Function                    |
+| ---------- | -----------| --------------------------- |
+| `5`        | `W` or ⬆   | Move window up              |
+| `8`        | `S` or ⬇   | Move window down            |
+| `7`        | `A` or ←   | Move window left            |
+| `9`        | `D` or →   | Move window right           |
+| `A`        | `Z`        | Return to normal execution  |
+
+## The concept
 
 ![Yo dawg, heard you like CHIP-8. So I put CHIP-8 in ur CHIP-8](./pictures/meme.jpg)
+
+Chipception is a lot of things. It's primarily just a dumb idea and a bit of a
+joke to write a CHIP-8 interpreter in CHIP-8. But it's also an experiment to
+start figuring out what an "operating system" for CHIP-8 could look like.
+
+Can we do multitasking? Can we have inter-process communication? How do we do
+window management? How do you control the "OS" with only a 16-key keypad? What
+kind of paradigms from PCs, mobile phones or PDAs make sense for CHIP-8?
+
+I'm not sure if I'm done with this experiment yet, but right now it's just a
+cool talking piece for Octojam 10. And, with it running at 200.000+ instructions
+per frame, yet another ROM to stress-test people's interpreters 😄
+
+## See also
+
+If you like this, you may also enjoy my other CHIP-8 projects:
+
+  * [3D Viper Maze](https://github.com/Timendus/3d-viper-maze) (XO-CHIP, Octojam
+    7) and [3D VIP'r Maze](https://github.com/Timendus/3d-vipr-maze) (original
+    CHIP-8)
+  * [Alien Inv8sion](https://github.com/Timendus/alien-inv8sion) (XO-CHIP with
+    "secret 16-colour mode", Octojam 8)
+  * [Bad Apple!!](https://github.com/Timendus/chip-8-bad-apple) (XO-CHIP,
+    Octojam 9)
+
+If you are a CHIP-8 emulator / interpreter developer, you may be interested in
+these projects:
+
+  * [CHIP-8 test suite](https://github.com/Timendus/chip8-test-suite) -
+    A test suite to find all kinds of issues in your interpreter
+  * [CHIP-8 Binary Format](https://github.com/Timendus/chip8-binary-format) -
+    An effort to standardise on a file format for CHIP-8 and friends
+  * [CHIP-8 database](https://github.com/chip-8/chip-8-database) - A repository
+    with metadata for CHIP-8 ROMs
 
 # Development log
 
 ## Wait but why..?
 
 I've been thinking about writing a CHIP-8 interpreter in CHIP-8 for almost two
-years or so. Yeah, you read that right. An interpreter for the CHIP-8 bytecode,
-itself programmed in CHIP-8. It's just such an insane idea that I can't help
-but find myself attracted to it.
+years or so. It's just such an insane idea that I can't help but find myself
+attracted to it.
 
 To be clear: there is absolutely no benefit to just having a CHIP-8 interpreter
 written in CHIP-8. It would only allow you to run the exact same programs, but
@@ -206,10 +289,13 @@ These are the key combos I wrote to begin with:
 
 | CHIP-8 keys | Qwerty keys | Function                               |
 | ----------- | ----------- | -------------------------------------- |
-| `A` - `1`   | `Z` - `1`   | Switch windows ("Alt-Tab")             |
+| `A` - `1`   | `Z` - `1`   | Cycle through windows ("Alt-Tab")      |
 | `A` - `4`   | `Z` - `Q`   | <ins>Q</ins>uit focussed interpreter   |
 | `A` - `D`   | `Z` - `R`   | <ins>R</ins>eset focussed interpreter  |
 | `A` - `5`   | `Z` - `W`   | Move focussed <ins>w</ins>indow around |
+
+I later changed `Z` - `Q` to `Z` - `C` because I kept accidentally quiting ROMs
+when I tried to cycle through them 🙈
 
 Moving windows around is done with either WASD or the cursor keys on a
 computer keyboard, or `5`, `7`, `8` and `9` on a CHIP-8 keypad. Pressing our
@@ -309,12 +395,13 @@ instruction to be a jump (over a longer block of code). You could jump over
 subroutine calls and store the subroutines below the 3.5KB limit, but in
 practice that doesn't buy you much.
 
-(Also, it's quite possible that some XO-CHIP interpreters don't support
-returning from a subroutine to an address that's more than 12 bits either,
-depending on how they implemented their stack.)
-
 In all honesty, I'm not 100% convinced that CHIP-8 without jumps or subroutines
 is even Turing-complete...
+
+Also, some XO-CHIP interpreters wrap the program counter around from `0xFFF` to
+`0x000`, or don't support returning from a subroutine to an address that's more
+than 12 bits. So realisticly, we just have to keep our code below the 3.5KB
+limit.
 
 ### So now what?
 
@@ -360,7 +447,7 @@ are some alternatives I drew:
 
 After messing with the different alternatives in the code a bit, I realised that
 I could implement the last design with the smallest number of instructions.
-Changing the design saved around 50 bytes 🎉
+Changing the design again saved around 50 bytes 🎉
 
 ## Launching programs
 
@@ -439,4 +526,29 @@ Lucky for me, their implementation doesn't do multi-tasking and window
 management, nor implement SUPER-CHIP. So my project is still unique in those
 regards, I hope 😉
 
+## Finishing the project
 
+The last stretch of this project was mostly fixing lingering bugs and adding
+some polish, constantly fighting against the executable memory limit.
+
+I have a ton of ideas left, but both running into the executable code limit and
+running into the deadline for Octojam told me that I needed to finish this
+project up for now.
+
+These ideas were left on the cutting room floor:
+
+  * Allow Chipception to read [CHIP-8 Binary
+    Format](https://github.com/Timendus/chip8-binary-format) files
+  * Support `hires` ROMs, scaled down in windows, with the option to go full
+    screen on them
+  * Add some proper memory management and register how much memory each ROM
+    really needs, so we can run more ROMs in parallel
+  * Have ROMs define their desired window size so not all windows are so similar
+  * Write some more Chipception-specific ROMs that an OS needs, like a process
+    manager, a calculator, Paint, maybe a "text editor" 😜
+  * Supporting the XO-CHIP instruction set
+
+All in all, I'm quite happy with how close I've come to a "CHIP-8 OS", in the
+sense of what I described in the beginning of this dev log! 🎉
+
+Thanks for reading all of this, and good luck with your own projects! 👋
