@@ -331,34 +331,9 @@
 :end
 
 # Copy the given buffer to the display, for full screen mode
-# Inputs:   i = pointer to buffer
-# Destroys: v0, v1, v2, v3, v4, i
-: buffer-to-display-lores
-    v0 := 0
-    v1 := 0
-    v2 := 15
-    v3 := 30
-    v4 := 2
-
-    lores
-    plane 3
-    clear
-
-    plane 1
-    loop
-        sprite v0 v1 15   i += v2  # 0 0
-        sprite v0 v2 15   i += v2  # 0 15
-        sprite v0 v3 2    i += v4  # 0 30
-        v0 += 8
-        if v0 != 64 then
-    again
-
-    return
-
-# Copy the given buffer to the display, for full screen mode
-# Inputs:   i = pointer to buffer
-# Destroys: v0, v1, v2, v3, v4, i
-: buffer-to-display-hires
+# Inputs:   i = pointer to buffer, v8 = 128 for hires, 64 for lores
+# Destroys: v0 - v7, i
+: buffer-to-display
     v0 := 0
     v1 := 0
     v2 := 15
@@ -366,6 +341,7 @@
     v4 := 45
     v5 := 60
     v6 := 4
+    v7 := 2
 
     hires
     plane 3
@@ -375,11 +351,15 @@
     loop
         sprite v0 v1 15   i += v2  # 0 0
         sprite v0 v2 15   i += v2  # 0 15
-        sprite v0 v3 15   i += v2  # 0 30
-        sprite v0 v4 15   i += v2  # 0 45
-        sprite v0 v5 4    i += v6  # 0 60
+        if v8 == 128 begin
+            sprite v0 v3 15   i += v2  # 0 30
+            sprite v0 v4 15   i += v2  # 0 45
+            sprite v0 v5 4    i += v6  # 0 60
+        else
+            sprite v0 v3 2    i += v7  # 0 30
+        end
         v0 += 8
-        if v0 != 128 then
+        if v0 != v8 then
     again
 
     return

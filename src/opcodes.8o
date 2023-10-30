@@ -254,24 +254,17 @@
 # Register X |= register Y
 : or-reg
     vX |= vY
-    save vX - vX
-    get-quirk v0 VF_QUIRK
-    vF := 0
-    if v0 != 0 then jump save-flag
-    return
+    jump bin-ops-save
 
 # Register X &= register Y
 : and-reg
     vX &= vY
-    save vX - vX
-    get-quirk v0 VF_QUIRK
-    vF := 0
-    if v0 != 0 then jump save-flag
-    return
+    jump bin-ops-save
 
 # Register X ^= register Y
 : xor-reg
     vX ^= vY
+: bin-ops-save
     save vX - vX
     get-quirk v0 VF_QUIRK
     vF := 0
@@ -281,12 +274,12 @@
 # Register X += register Y
 : add-reg
     vX += vY
-    save vX - vX
-    jump save-flag
+    jump maths-save
 
 # Register X -= register Y
 : sub-reg
     vX -= vY
+: maths-save
     save vX - vX
     jump save-flag
 
@@ -346,15 +339,13 @@
 : write-sound
     load v0
     point-to SOUND_TIMER
-    save v0
-    return
+    jump special-regs-save
 
 # Write register X into delay timer
 : write-delay
     load v0
     point-to DELAY_TIMER
-    save v0
-    return
+    jump special-regs-save
 
 # Load delay timer into register X
 : read-delay
@@ -362,6 +353,7 @@
     load v0
     point-to REGISTERS
     i += second-nibble
+: special-regs-save
     save v0
     return
 
@@ -520,6 +512,7 @@
 : set-lores
     v0 := DISPLAY_LORES
     jump set-res
+
 : set-hires
     i := long window-mode
     v0 := MODE_FULLSCREEN
