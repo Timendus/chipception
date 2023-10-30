@@ -551,7 +551,7 @@
     load v1 - v1
     point-to DISPLAY_MODE
     load v3 - v3
-    if v3 == DISPLAY_LORES then v4 := 31
+    v4 := 31
     if v3 == DISPLAY_HIRES then v4 := 63
     v1 &= v4
     v4 += 1
@@ -594,7 +594,7 @@
         #     spriteWidth = width - v0
         point-to DISPLAY_MODE
         load v2 - v2
-        if v2 == DISPLAY_LORES then v3 := 63
+        v3 := 63
         if v2 == DISPLAY_HIRES then v3 := 127
         v0 &= v3 # Mask X coordinate
         v3 += 1
