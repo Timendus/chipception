@@ -39,7 +39,7 @@ these commands to Chipception:
 | CHIP-8 keys | Qwerty keys | Function                               |
 | ----------- | ----------- | -------------------------------------- |
 | `A` + `1`   | `Z` + `1`   | Cycle through windows ("Alt-Tab")      |
-| `A` + `4`   | `Z` + `C`   | <ins>C</ins>lose focussed interpreter  |
+| `A` + `B`   | `Z` + `C`   | <ins>C</ins>lose focussed interpreter  |
 | `A` + `D`   | `Z` + `R`   | <ins>R</ins>eset focussed interpreter  |
 | `A` + `5`   | `Z` + `W`   | Move focussed <ins>w</ins>indow around |
 | `A` + `E`   | `Z` + `F`   | <ins>F</ins>ullscreen the window       |
