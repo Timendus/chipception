@@ -13,6 +13,9 @@
     :pointer rom-3d-vipr-maze
     :include "../roms/3d-vipr-maze.png" no-labels
 
+    :pointer rom-blobo
+    :include "../roms/3d-vipr-maze.png" no-labels
+
     :pointer rom-cave-explorer
     :include "../roms/cave-explorer.png" no-labels
 
@@ -82,3 +85,8 @@
     :byte CHIP8         # Quirks
     30                  # Cycles per frame
     :include "../roms/cave-explorer.ch8"
+
+: rom-blobo
+    :byte SUPERCHIP
+    30
+    :include "../roms/blobo.ch8"

@@ -457,14 +457,24 @@
 ## Display manipulation
 
 : clear-screen
-    # TODO: work for hires
-    point-to DISPLAY_BUFFER 
+    point-to DISPLAY_MODE
+    load v3 - v3
+    point-to RAM 
+    v0 := 0x10
+    v1 := 0x00
+    add-16-bit-to-i
     v0 := 0x00
     v1 := 0
+    v2 := 1
+    if v3 == DISPLAY_HIRES then v2 := 4
     loop
-        save v0
-        v1 += 1
-        if v1 == 0 then return
+        loop
+            save v0
+            v1 += 1
+            if v1 == 0 then return
+        again
+        v2 -= 1
+        if v2 != 0 then
     again
 
 # Note that the scrolling opcodes are not finished and have been disabled to
@@ -511,6 +521,9 @@
     v0 := DISPLAY_LORES
     jump set-res
 : set-hires
+    i := long window-mode
+    v0 := MODE_FULLSCREEN
+    save v0
     v0 := DISPLAY_HIRES
 : set-res
     point-to DISPLAY_MODE
@@ -651,14 +664,22 @@
         end
     end
 
+    v9 := 64
+    vC := 32
+    point-to DISPLAY_MODE
+    load v2 - v2
+    if v2 == DISPLAY_HIRES begin
+        v9 := 128
+        vC := 64
+    end
+
     v2 := v0
     v3 := v1
-    vF := DISPLAY_BUFFER
+    vF := RAM
     unpack-pointer
+    vA += 0x10
     v0 := v4
     v1 := v5
-    v9 := 64        # TODO: hires
-    vC := 32
     blit-sprite
     jump save-flag
 

@@ -333,13 +333,14 @@
 # Copy the given buffer to the display, for full screen mode
 # Inputs:   i = pointer to buffer
 # Destroys: v0, v1, v2, v3, v4, i
-: buffer-to-display
+: buffer-to-display-lores
     v0 := 0
     v1 := 0
     v2 := 15
     v3 := 30
     v4 := 2
 
+    lores
     plane 3
     clear
 
@@ -353,6 +354,36 @@
     again
 
     return
+
+# Copy the given buffer to the display, for full screen mode
+# Inputs:   i = pointer to buffer
+# Destroys: v0, v1, v2, v3, v4, i
+: buffer-to-display-hires
+    v0 := 0
+    v1 := 0
+    v2 := 15
+    v3 := 30
+    v4 := 45
+    v5 := 60
+    v6 := 4
+
+    hires
+    plane 3
+    clear
+
+    plane 1
+    loop
+        sprite v0 v1 15   i += v2  # 0 0
+        sprite v0 v2 15   i += v2  # 0 15
+        sprite v0 v3 15   i += v2  # 0 30
+        sprite v0 v4 15   i += v2  # 0 45
+        sprite v0 v5 4    i += v6  # 0 60
+        v0 += 8
+        if v0 != 128 then
+    again
+
+    return
+
 
 :segment data
 
