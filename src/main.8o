@@ -156,18 +156,16 @@
             v0 := 5
             if v0 key then move-focussed
 
-            :if FULLSCREEN
-                # Z + F -> Go full screen
-                v0 := 0xE
-                if v0 key begin
-                    i := long window-mode
-                    load v0 - v0
-                    vF := 2
-                    v0 ^= vF
-                    save v0
-                    wait-release
-                end
-            :end
+            # Z + F -> Go full screen
+            v0 := 0xE
+            if v0 key begin
+                i := long window-mode
+                load v0 - v0
+                vF := MODE_FULLSCREEN
+                v0 ^= vF
+                save v0
+                wait-release
+            end
 
             # Z + S -> Open launcher
             v0 := 8
@@ -252,6 +250,18 @@
 
 # Rerender the screen
 : composite-display
+    i := long window-mode
+    load v0
+    if v0 == MODE_FULLSCREEN begin
+        # Just draw the focussed window to the display in lores mode
+        lores
+        update-focussed
+        point-to DISPLAY_BUFFER
+        jump buffer-to-display
+    end
+
+    # Draw the whole scene with the background and all the windows
+    hires
     :unpack long background-image
     display-overwrite
     vD := 0

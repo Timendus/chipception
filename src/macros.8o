@@ -73,9 +73,8 @@
 :const DISPLAY_LORES 0
 :const DISPLAY_HIRES 1
 
-:const MODE_FULLSCREEN 0
-:const MODE_TILED 1
-:const MODE_WINDOWED 2
+:const MODE_WINDOWED 0
+:const MODE_FULLSCREEN 1
 
 # Constants and macros for quirks
 

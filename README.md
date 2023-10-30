@@ -42,6 +42,7 @@ these commands to Chipception:
 | `A` + `4`   | `Z` + `C`   | <ins>C</ins>lose focussed interpreter  |
 | `A` + `D`   | `Z` + `R`   | <ins>R</ins>eset focussed interpreter  |
 | `A` + `5`   | `Z` + `W`   | Move focussed <ins>w</ins>indow around |
+| `A` + `E`   | `Z` + `F`   | <ins>F</ins>ullscreen the window       |
 | `A` + `8`   | `Z` + `S`   | <ins>S</ins>tart the launcher app      |
 
 When you are moving a window, these are the relevant keys:

@@ -576,12 +576,6 @@
         end
     end
     v6 := v2 # Save height for later
-    :if FULLSCREEN
-        vF := 0x10
-        v2 |= vF
-        i := draw-sprite-smc1
-        save v2 - v2
-    :end
 
     # Set i register
     i := long current-machine-ptr
@@ -657,33 +651,15 @@
         end
     end
 
-    :if FULLSCREEN
-        i := draw-sprite-smc2
-        save v4 - v5
-
-        i := long window-mode
-        load vF - vF
-        if vF != MODE_FULLSCREEN begin
-    :end
-            v2 := v0
-            v3 := v1
-            vF := DISPLAY_BUFFER
-            unpack-pointer
-            v0 := v4
-            v1 := v5
-            v9 := 64        # TODO: hires
-            vC := 32
-            blit-sprite
-    :if FULLSCREEN
-        else
-            # Actually do the thing
-            0xF0 0x00       # i := long ...
-            : draw-sprite-smc2
-            0x00 0x00       # sprite address
-            :next draw-sprite-smc1
-            sprite v0 v1 8  # 8 overwritten by actual height
-        end
-    :end
+    v2 := v0
+    v3 := v1
+    vF := DISPLAY_BUFFER
+    unpack-pointer
+    v0 := v4
+    v1 := v5
+    v9 := 64        # TODO: hires
+    vC := 32
+    blit-sprite
     jump save-flag
 
 :segment data
