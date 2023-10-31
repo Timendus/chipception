@@ -455,7 +455,7 @@
     v0 := 0x10
     v1 := 0x00
     add-16-bit-to-i
-    v0 := 0x00
+    v0 := 0
     v1 := 0
     v2 := 1
     if v3 == DISPLAY_HIRES then v2 := 4
@@ -463,11 +463,12 @@
         loop
             save v0
             v1 += 1
-            if v1 == 0 then return
+            if v1 != 0 then
         again
         v2 -= 1
         if v2 != 0 then
     again
+    return
 
 # Note that the scrolling opcodes are not finished and have been disabled to
 # save executable memory space. The ROMs I'm running don't need these opcodes
@@ -521,7 +522,7 @@
 : set-res
     point-to DISPLAY_MODE
     save v0
-    return
+    jump clear-screen
 
 : draw-sprite
     get-quirk v0 DISP_QUIRK
