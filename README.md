@@ -538,7 +538,9 @@ regards, I hope 😉
 ## Finishing the project
 
 The last stretch of this project was mostly fixing lingering bugs and adding
-some polish, constantly fighting against the executable memory limit.
+some polish, constantly fighting against the executable memory limit. I managed
+to squeeze in a title screen with a nifty animation, a full-screen mode and the
+ability to run `hires` SUPER-CHIP ROMs.
 
 I have a ton of ideas left, but both running into the executable code limit and
 running into the deadline for Octojam told me that I needed to finish this
