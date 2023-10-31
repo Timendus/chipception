@@ -16,7 +16,7 @@ written in CHIP-8 itself! 😄
 ## How to use Chipception
 
 Chipception will provide you with a menu (known as the launcher app) from which
-you can select ROMs to run. You can run at most 8 ROMs in parallel. Note that
+you can select ROMs to run. You can run at most six ROMs in parallel. Note that
 the launcher app itself counts as a ROM.
 
 The launcher app will properly start ROMs in either CHIP-8 or SUPER-CHIP mode,
