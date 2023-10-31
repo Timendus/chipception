@@ -254,24 +254,17 @@
 # Register X |= register Y
 : or-reg
     vX |= vY
-    save vX - vX
-    get-quirk v0 VF_QUIRK
-    vF := 0
-    if v0 != 0 then jump save-flag
-    return
+    jump bin-ops-save
 
 # Register X &= register Y
 : and-reg
     vX &= vY
-    save vX - vX
-    get-quirk v0 VF_QUIRK
-    vF := 0
-    if v0 != 0 then jump save-flag
-    return
+    jump bin-ops-save
 
 # Register X ^= register Y
 : xor-reg
     vX ^= vY
+: bin-ops-save
     save vX - vX
     get-quirk v0 VF_QUIRK
     vF := 0
@@ -281,12 +274,12 @@
 # Register X += register Y
 : add-reg
     vX += vY
-    save vX - vX
-    jump save-flag
+    jump maths-save
 
 # Register X -= register Y
 : sub-reg
     vX -= vY
+: maths-save
     save vX - vX
     jump save-flag
 
@@ -346,15 +339,13 @@
 : write-sound
     load v0
     point-to SOUND_TIMER
-    save v0
-    return
+    jump special-regs-save
 
 # Write register X into delay timer
 : write-delay
     load v0
     point-to DELAY_TIMER
-    save v0
-    return
+    jump special-regs-save
 
 # Load delay timer into register X
 : read-delay
@@ -362,6 +353,7 @@
     load v0
     point-to REGISTERS
     i += second-nibble
+: special-regs-save
     save v0
     return
 
@@ -457,15 +449,26 @@
 ## Display manipulation
 
 : clear-screen
-    # TODO: work for hires
-    point-to DISPLAY_BUFFER 
-    v0 := 0x00
+    point-to DISPLAY_MODE
+    load v3 - v3
+    point-to RAM 
+    v0 := 0x10
+    v1 := 0x00
+    add-16-bit-to-i
+    v0 := 0
     v1 := 0
+    v2 := 1
+    if v3 == DISPLAY_HIRES then v2 := 4
     loop
-        save v0
-        v1 += 1
-        if v1 == 0 then return
+        loop
+            save v0
+            v1 += 1
+            if v1 != 0 then
+        again
+        v2 -= 1
+        if v2 != 0 then
     again
+    return
 
 # Note that the scrolling opcodes are not finished and have been disabled to
 # save executable memory space. The ROMs I'm running don't need these opcodes
@@ -510,12 +513,16 @@
 : set-lores
     v0 := DISPLAY_LORES
     jump set-res
+
 : set-hires
+    i := long window-mode
+    v0 := MODE_FULLSCREEN
+    save v0
     v0 := DISPLAY_HIRES
 : set-res
     point-to DISPLAY_MODE
     save v0
-    return
+    jump clear-screen
 
 : draw-sprite
     get-quirk v0 DISP_QUIRK
@@ -535,130 +542,153 @@
         end
     end
 
-    # Load value from first register
+    # Note for future self: These aliases have been chosen such that they
+    # overlap perfectly with those in blit-sprite.
+    :alias sprite-address-hi    v0
+    :alias sprite-address-lo    v1
+    :alias x-coord              v2
+    :alias y-coord              v3
+    :alias temp                 v4
+    :alias mask-left            v5
+    :alias sprite-height-pixels v6
+    :alias sprite-width-bytes   v7
+    :alias mask-right           v8
+    :alias disp-width           v9
+    :alias temp1                vA
+    :alias temp2                vB
+    :alias disp-height          vC
+
+    # Load X coordinate from first register
     point-to REGISTERS
     i += second-nibble
-    load v0
+    load x-coord - x-coord
 
-    # Load value from second register
-    v2 := opcode-lo
+    # Get height from opcode
+    sprite-height-pixels := opcode-lo
+    vF := 0x0F
+    sprite-height-pixels &= vF
+    sprite-width-bytes := 1
+    if sprite-height-pixels == 0 begin
+        sprite-height-pixels := 16
+        sprite-width-bytes := 2
+    end
+
+    # Load Y coordinate from second register
     opcode-lo >>= opcode-lo
     opcode-lo >>= opcode-lo
     opcode-lo >>= opcode-lo
     opcode-lo >>= opcode-lo
     point-to REGISTERS
     i += opcode-lo
-    load v1 - v1
+    load y-coord - y-coord
+
+    # Get display resolution and wrap coordinates if needed
     point-to DISPLAY_MODE
-    load v3 - v3
-    v4 := 31
-    if v3 == DISPLAY_HIRES then v4 := 63
-    v1 &= v4
-    v4 += 1
-
-    # Set draw height
-    vF := 0x0F
-    v2 &= vF
-    v7 := 1
-    if v2 == 0 begin
-        v2 := 16
-        v7 := 2
+    load v0
+    disp-width := 63
+    disp-height := 31
+    if v0 == DISPLAY_HIRES begin
+        disp-width := 127
+        disp-height := 63
     end
-    get-quirk v3 CLIP_QUIRK
-    if v3 != 0 begin
-        # if v1 > (height - v2):
-        #     v2 = height - v1
-        v3 := v4
-        v3 -= v2
-        if v1 > v3 begin
-            v2 := v4
-            v2 -= v1
-        end
-    end
-    v6 := v2 # Save height for later
+    x-coord &= disp-width
+    y-coord &= disp-height
+    disp-width += 1
+    disp-height += 1
 
-    # Set i register
+    # Get real-world sprite address
     i := long current-machine-ptr
-    load v4 - v5
+    load sprite-address-hi - sprite-address-lo
     vF := RAM
-    v5 += vF
-    v4 += vF
+    sprite-address-lo += vF
+    sprite-address-hi += vF
     point-to INDEX
-    load v2 - v3
-    v5 += v3
-    v4 += vF
-    v4 += v2
-    get-quirk v2 CLIP_QUIRK
-    if v2 != 0 begin
-        # if v0 > (width - spriteWidth):
-        #     spriteWidth = width - v0
-        point-to DISPLAY_MODE
-        load v2 - v2
-        v3 := 63
-        if v2 == DISPLAY_HIRES then v3 := 127
-        v0 &= v3 # Mask X coordinate
-        v3 += 1
-        v2 := v3
-        v2 -= 8
-        if v6 == 16 then v2 -= 8
-        if v0 > v2 begin
-            v2 := v3
-            v2 -= v0
-            # v2 is new width, now make a mask
+    load temp1 - temp2
+    sprite-address-lo += temp2
+    sprite-address-hi += vF
+    sprite-address-hi += temp1
+
+    # Clip sprite width and height on display dimensions if clip quirk is active
+    get-quirk temp CLIP_QUIRK
+    if temp != 0 begin
+        # If the sprite clips that the bottom of the display, we can just
+        # instruct the draw instruction to draw a couple of lines less.
+        # if Y-coord > (disp-height - sprite-height):
+        #     sprite-height = disp-height - Y-coord
+        temp := disp-height
+        temp -= sprite-height-pixels
+        if y-coord > temp begin
+            sprite-height-pixels := disp-height
+            sprite-height-pixels -= y-coord
+        end
+
+        # If the sprite clips on the right of the display we have a bigger
+        # issue. Then we actually have to mask out the sprite to the correct new
+        # width, and use the masked out sprite instead of the original.
+        # if X-coord > (disp-width - sprite-width):
+        #     sprite-width = disp-width - X-coord
+        temp := disp-width
+        temp -= 8
+        if sprite-width-bytes == 2 then temp -= 8
+        if x-coord > temp begin
+            temp := disp-width
+            temp -= x-coord
+
+            # Make a bitmask for the sprite so we can make the sprite the max available width
             vF := 8
-            if v6 == 16 then vF := 16
-            v2 =- vF
-            v3 := 0xFF
-            v8 := 0xFF
+            if sprite-height-pixels == 16 then vF := 16
+            temp =- vF
+            mask-right := 0xFF
+            mask-left := 0xFF
             loop
-                v8 <<= v8
-                v3 <<= v3
-                if vF != 0 then v8 += 1
-                v2 -= 1
-                if v2 != 0 then
+                mask-left <<= mask-left
+                mask-right <<= mask-right
+                mask-left += vF
+                # if vF != 0 then mask-left += 1
+                temp -= 1
+                if temp != 0 then
             again
-            v2 := 0
+
+            # Create a masked version of the sprite in the sprite-store
+            temp := 0
             loop
-                i := draw-sprite-smc3
-                save v4 - v5
+                i := draw-sprite-smc
+                save sprite-address-hi - sprite-address-lo
                 0xF0 0x00   # i := long ...
-                : draw-sprite-smc3
+                : draw-sprite-smc
                 0x00 0x00   # sprite address
-                # i points to start of sprite
-                i += v2
-                if v6 == 16 begin
-                    i += v2
-                    load vA - vB
-                    vA &= v8
-                    vB &= v3  # Mask out overflowing bits / pixels
+                i += temp
+                # i points to the current row in the original sprite
+                if sprite-height-pixels == 16 begin
+                    i += temp
+                    load temp1 - temp2
+                    vA &= mask-left   # Mask out overflowing bits / pixels
+                    vB &= mask-right
                     i := long draw-sprite-store
-                    i += v2
-                    i += v2
-                    save vA - vB
+                    i += temp
+                    i += temp
+                    save temp1 - temp2
                 else
-                    load vA - vA
-                    vA &= v3  # Mask out overflowing bits / pixels
+                    load temp1 - temp1
+                    vA &= mask-right  # Mask out overflowing bits / pixels
                     i := long draw-sprite-store
-                    i += v2
-                    save vA - vA
+                    i += temp
+                    save temp1 - temp1
                 end
-                v2 += 1
-                if v2 != v6 then
+                temp += 1
+                if temp != sprite-height-pixels then
             again
-            :alias unpack-hi v4
-            :alias unpack-lo v5
+
+            :alias unpack-hi sprite-address-hi
+            :alias unpack-lo sprite-address-lo
             :unpack long draw-sprite-store
         end
     end
 
-    v2 := v0
-    v3 := v1
-    vF := DISPLAY_BUFFER
+    # Render sprite to our private display buffer
+    vF := RAM
     unpack-pointer
-    v0 := v4
-    v1 := v5
-    v9 := 64        # TODO: hires
-    vC := 32
+    vA += 0x10
     blit-sprite
     jump save-flag
 

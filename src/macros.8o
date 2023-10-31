@@ -22,12 +22,11 @@
 :calc  FOCUSSED          { WINDOW_POSITION + 3 }
 
 :calc  RAM               { FOCUSSED + 1 }
-:calc  DISPLAY_BUFFER    { RAM + 180 }
-:calc  MACHINE_SIZE      { RAM + 4096 }
+:calc  MACHINE_SIZE      { RAM + 4096 + 1024 }
 
 :alias cycle vD
 :alias current-machine vE
-:const MAX_MACHINES 8
+:const MAX_MACHINES 6
 
 :macro point-to PTR {
     vF := PTR

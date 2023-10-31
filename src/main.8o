@@ -254,9 +254,20 @@
     load v0
     if v0 == MODE_FULLSCREEN begin
         # Just draw the focussed window to the display in lores mode
-        lores
         update-focussed
-        point-to DISPLAY_BUFFER
+        point-to DISPLAY_MODE
+        load v2 - v2
+        point-to RAM 
+        v0 := 0x10
+        v1 := 0x00
+        add-16-bit-to-i
+        if v2 == DISPLAY_HIRES begin
+            v8 := 128
+            hires
+        else
+            v8 := 64
+            lores
+        end
         jump buffer-to-display
     end
 
@@ -286,9 +297,18 @@
             draw-window
             point-to WINDOW_POSITION
             load v2 - v3
-            vF := DISPLAY_BUFFER
-            unpack-pointer
-            v4 := 8             # TODO: hires
+            point-to DISPLAY_MODE
+            load v0
+            if v0 == DISPLAY_HIRES begin
+                :alias unpack-hi vA
+                :alias unpack-lo vB
+                :unpack long hires-placeholder-message
+            else
+                vF := RAM
+                unpack-pointer
+                vA += 0x10
+            end
+            v4 := 8
             v5 := 32
             blit-to-display
         end
@@ -490,6 +510,17 @@
     update-focussed
     set8 RUNNING STATE_STOPPED
     update-focussed
+
+    # If window "below" this one is lores, and we're in fullscreen mode, jump
+    # back to windowed mode.
+    point-to DISPLAY_MODE
+    load v1 - v1
+    i := long window-mode
+    load v0 - v0
+    if v0 == MODE_FULLSCREEN begin
+        if v1 != DISPLAY_HIRES then v0 := MODE_WINDOWED
+        save v0
+    end
     # jump wait-release  # fall through
 
 : wait-release
@@ -616,7 +647,7 @@
 :include "gui.8o"
 :include "fonts.8o"
 :include "roms.8o"
-:include "background.8o"
+:include "images.8o"
 
 : free-memory
     # Starts here

@@ -13,3 +13,6 @@
 : background-image
   :include "../pictures/background-layer1.png" 8x64 no-labels
   :include "../pictures/background-layer2.png" 8x64 no-labels
+
+: hires-placeholder-message
+  :include "../pictures/hires-placeholder-message.png" 8x32 no-labels

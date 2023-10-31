@@ -8,10 +8,13 @@
 
 : rom-table
     # Number of ROMs, max is currently 32
-    9
+    11
 
     :pointer rom-3d-vipr-maze
     :include "../roms/3d-vipr-maze.png" no-labels
+
+    :pointer rom-blobo
+    :include "../roms/blobo.png" no-labels
 
     :pointer rom-cave-explorer
     :include "../roms/cave-explorer.png" no-labels
@@ -30,6 +33,9 @@
 
     :pointer rom-space-invaders
     :include "../roms/space-invaders.png" no-labels
+
+    :pointer rom-rockto
+    :include "../roms/rockto.png" no-labels
 
     :pointer rom-wdl
     :include "../roms/wdl.png" no-labels
@@ -82,3 +88,13 @@
     :byte CHIP8         # Quirks
     30                  # Cycles per frame
     :include "../roms/cave-explorer.ch8"
+
+: rom-blobo
+    :byte SUPERCHIP
+    100
+    :include "../roms/blobo.ch8"
+
+: rom-rockto
+    :byte SUPERCHIP
+    100
+    :include "../roms/rockto.ch8"
