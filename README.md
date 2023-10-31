@@ -13,6 +13,11 @@ written in CHIP-8 itself! 😄
 * [Run Chipception in your browser](https://timendus.github.io/chipception/)
 * [Download the ROM](https://github.com/Timendus/chipception/raw/main/dist/chipception.ch8)
 
+_Note: there's a known bug where the screen starts to flicker like mad when you
+run several programs at the same time. I've managed to introduce that bug
+somehow on the evening on which I need to submit this entry to Octojam. I'll see
+if I can fix that later this week 🙈_
+
 ## How to use Chipception
 
 Chipception will provide you with a menu (known as the launcher app) from which
@@ -543,8 +548,6 @@ These ideas were left on the cutting room floor:
 
   * Allow Chipception to read [CHIP-8 Binary
     Format](https://github.com/Timendus/chip8-binary-format) files
-  * Support `hires` ROMs, scaled down in windows, with the option to go full
-    screen on them
   * Add some proper memory management and register how much memory each ROM
     really needs, so we can run more ROMs in parallel
   * Have ROMs define their desired window size so not all windows are so similar
