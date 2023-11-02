@@ -272,7 +272,6 @@
     end
 
     # Draw the whole scene with the background and all the windows
-    hires
     :unpack long background-image
     display-overwrite
     vD := 0

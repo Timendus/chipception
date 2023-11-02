@@ -10,6 +10,7 @@
     load v6
     i := long display-buffer
 
+    hires
     plane 3
     clear
 
