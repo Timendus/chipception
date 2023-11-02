@@ -392,7 +392,6 @@
     end
 
     # Draw the whole scene with the background and all the windows
-    hires
     :unpack long background-image
     display-overwrite
     vD := 0
@@ -581,7 +580,7 @@
         end
     again
 
-#@line[1,467,src/main.8o]
+#@line[1,466,src/main.8o]
 
 : reset-focussed
     update-focussed
@@ -748,7 +747,7 @@
     return
 
 
-#@line[1,644,src/main.8o]
+#@line[1,643,src/main.8o]
 #@line[2,1,/Users/tim.franssen/Workspace/chip8/chipception/src/decoder.8o]
 # Decode the instruction and jump to the right opcode ASAP
 
@@ -941,7 +940,7 @@
     :breakpoint unknown-opcode
     loop again
 
-#@line[1,645,src/main.8o]
+#@line[1,644,src/main.8o]
 #@line[2,1,/Users/tim.franssen/Workspace/chip8/chipception/src/opcodes.8o]
 # Opcode implementations
 
@@ -1622,7 +1621,7 @@
     jump save-flag
 
 
-#@line[1,646,src/main.8o]
+#@line[1,645,src/main.8o]
 #@line[2,1,/Users/tim.franssen/Workspace/chip8/chipception/src/display.8o]
 # The display buffers (at the bottom of this file) are structured in a way that
 # makes them easy to sprite to the screen. So the data is layed out in 8-pixel
@@ -1636,6 +1635,7 @@
     load v6
     i := long display-buffer
 
+    hires
     plane 3
     clear
 
@@ -1665,8 +1665,8 @@
     return
 
 
-#@line[1,646,src/main.8o]
-#@line[2,45,/Users/tim.franssen/Workspace/chip8/chipception/src/display.8o]
+#@line[1,645,src/main.8o]
+#@line[2,46,/Users/tim.franssen/Workspace/chip8/chipception/src/display.8o]
 
 # Overwrite the display buffer contents with this image
 # Inputs:
@@ -1910,7 +1910,7 @@
     return
 
 
-#@line[2,332,/Users/tim.franssen/Workspace/chip8/chipception/src/display.8o]
+#@line[2,333,/Users/tim.franssen/Workspace/chip8/chipception/src/display.8o]
 
 # Copy the given buffer to the display, for full screen mode
 # Inputs:   i = pointer to buffer, v8 = 128 for hires, 64 for lores
@@ -1947,7 +1947,7 @@
 
 
 
-#@line[1,647,src/main.8o]
+#@line[1,646,src/main.8o]
 #@line[2,1,/Users/tim.franssen/Workspace/chip8/chipception/src/gui.8o]
 :const display-height 64
 
@@ -2062,7 +2062,7 @@
     jump blit-sprite
 
 
-#@line[1,647,src/main.8o]
+#@line[1,646,src/main.8o]
 #@line[2,123,/Users/tim.franssen/Workspace/chip8/chipception/src/gui.8o]
 
 # Draw horizonal line
@@ -2308,11 +2308,11 @@
 
     return
 
-#@line[1,464,src/main.8o]
+#@line[1,463,src/main.8o]
 : alt-tab-store
     0
 
-#@line[1,633,src/main.8o]
+#@line[1,632,src/main.8o]
 
 : window-mode
     :byte MODE_WINDOWED
@@ -2325,7 +2325,7 @@
     0xFF 0x00 0xFF 0x00 0xFF 0x00 0xFF 0x00 0xFF 0x00 0xFF 0x00 0xFF 0x00 0xFF 0x00
 
 
-#@line[1,645,src/main.8o]
+#@line[1,644,src/main.8o]
 #@line[2,696,/Users/tim.franssen/Workspace/chip8/chipception/src/opcodes.8o]
 
 : draw-sprite-store
@@ -2334,13 +2334,13 @@
     0 0 0 0 0 0 0 0
     0 0 0 0 0 0 0 0
 
-#@line[1,646,src/main.8o]
-#@line[2,42,/Users/tim.franssen/Workspace/chip8/chipception/src/display.8o]
+#@line[1,645,src/main.8o]
+#@line[2,43,/Users/tim.franssen/Workspace/chip8/chipception/src/display.8o]
 : display-copy-values
     0 0 15 30 45 60 4
 
-#@line[1,646,src/main.8o]
-#@line[2,368,/Users/tim.franssen/Workspace/chip8/chipception/src/display.8o]
+#@line[1,645,src/main.8o]
+#@line[2,369,/Users/tim.franssen/Workspace/chip8/chipception/src/display.8o]
 
 : display-buffer
 : display-buffer-plane1
@@ -2413,7 +2413,7 @@
   0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
   0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
 
-#@line[1,647,src/main.8o]
+#@line[1,646,src/main.8o]
 #@line[2,114,/Users/tim.franssen/Workspace/chip8/chipception/src/gui.8o]
 
 : header-fade
@@ -2424,7 +2424,7 @@
     0x25 0x7C
 
 
-#@line[1,648,src/main.8o]
+#@line[1,647,src/main.8o]
 #@line[2,2,/Users/tim.franssen/Workspace/chip8/chipception/src/fonts.8o]
 
 : chip-8-font
@@ -2841,7 +2841,7 @@
     0b00111110
     
 
-#@line[1,649,src/main.8o]
+#@line[1,648,src/main.8o]
 #@line[2,2,/Users/tim.franssen/Workspace/chip8/chipception/src/roms.8o]
 
 : launcher
@@ -6781,7 +6781,7 @@
 #@line[2,100,/Users/tim.franssen/Workspace/chip8/chipception/src/roms.8o]
  0x00 0xee 0x00 0xff 0x6b 0x01 0x27 0xfc 0x26 0x52 0x26 0xe8 0x4c 0x00 0x7b 0x01 0x63 0x0a 0xf3 0x18 0x3c 0x02 0xf0 0x0a 0x18 0x28
 
-#@line[1,650,src/main.8o]
+#@line[1,649,src/main.8o]
 #@line[2,2,/Users/tim.franssen/Workspace/chip8/chipception/src/images.8o]
 
 # Colours:
@@ -19856,7 +19856,7 @@
 #@line[2,19,/Users/tim.franssen/Workspace/chip8/chipception/src/images.8o]
   0b00000000
 
-#@line[1,651,src/main.8o]
+#@line[1,650,src/main.8o]
 
 : free-memory
     # Starts here
