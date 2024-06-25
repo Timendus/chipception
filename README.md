@@ -12,6 +12,8 @@ written in CHIP-8 itself! 😄
 * [This program on Itch.io](https://timendus.itch.io/chipception-os)
 * [Run Chipception in your browser](https://timendus.github.io/chipception/)
 * [Download the ROM](https://github.com/Timendus/chipception/raw/main/dist/chipception.ch8)
+* Chipception was featured on the
+  [OctoJam 10 Showcase](https://www.youtube.com/watch?v=u1f9J6odZBs&list=PLvsRQ9bQ1QDNnDaMyLjhue2ULbDK5Dil0&t=3537s) (YouTube)
 
 ## How to use Chipception
 
